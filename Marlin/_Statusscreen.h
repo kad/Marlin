@@ -25,6 +25,10 @@
 //
 // Status Screen Logo bitmap
 //
+#if ENABLED(KAD_SKR_BED)
+  #define STATUS_LOGO_X 0
+#endif
+
 #if 1
 #define STATUS_LOGO_WIDTH 58
 

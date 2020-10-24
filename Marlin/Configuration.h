@@ -69,7 +69,11 @@
 // @section info
 
 // Author info of this build printed to the host during boot and M115
-#define STRING_CONFIG_H_AUTHOR "(kad, Anycubic Mega Zero)" // Who made the changes.
+#if ENABLED(KAD_BLTOUCH)
+  #define STRING_CONFIG_H_AUTHOR "(kad, Anycubic Mega Zero BLTouch)" // Who made the changes.
+#else
+  #define STRING_CONFIG_H_AUTHOR "(kad, Anycubic Mega Zero)" // Who made the changes.
+#endif
 //#define CUSTOM_VERSION_FILE Version.h // Path from the root directory (no quotes)
 
 /**
@@ -86,11 +90,16 @@
 // Show the Marlin bootscreen on startup. ** ENABLE FOR PRODUCTION **
 #define SHOW_BOOTSCREEN
 
+// KAD: 500 bytes
+#if DISABLED(KAD_BLTOUCH) || ENABLED(KAD_SKR_MINI_NANOLIB)
 // Show the bitmap in Marlin/_Bootscreen.h on startup.
-#define SHOW_CUSTOM_BOOTSCREEN
+  #define SHOW_CUSTOM_BOOTSCREEN
+#endif
 
 // Show the bitmap in Marlin/_Statusscreen.h on the status screen.
-#define CUSTOM_STATUS_SCREEN_IMAGE
+#if DISABLED(KAD_MELZI_BED)
+  #define CUSTOM_STATUS_SCREEN_IMAGE
+#endif
 
 // @section machine
 
@@ -102,7 +111,13 @@
  *
  * :[-1, 0, 1, 2, 3, 4, 5, 6, 7]
  */
-#define SERIAL_PORT 0
+//#define SERIAL_PORT 0
+#if ENABLED(KAD_SKR_MINI)
+  #define SERIAL_PORT -1
+  #define SERIAL_PORT_2 2
+#else
+  #define SERIAL_PORT 0
+#endif
 
 /**
  * Serial Port Baud Rate
@@ -139,7 +154,12 @@
 
 // Choose the name from boards.h that matches your setup
 #ifndef MOTHERBOARD
-  #define MOTHERBOARD BOARD_MELZI_CREALITY
+  #if ENABLED(KAD_SKR_MINI)
+    //#define MOTHERBOARD BOARD_BTT_SKR_MINI_E3_V2_0
+    #define MOTHERBOARD BOARD_BTT_SKR_MINI_MZ_V1_0
+  #else
+    #define MOTHERBOARD BOARD_MELZI_CREALITY
+  #endif
 #endif
 
 // Name displayed in the LCD "Ready" message and Info menu
@@ -363,8 +383,10 @@
  * Enable and connect the power supply to the PS_ON_PIN.
  * Specify whether the power supply is active HIGH or active LOW.
  */
-//#define PSU_CONTROL
-//#define PSU_NAME "Power Supply"
+#if ENABLED(KAD_SKR_MINI_NANOLIB)
+  #define PSU_CONTROL
+  #define PSU_NAME "Power Supply"
+#endif
 
 #if ENABLED(PSU_CONTROL)
   //#define PS_OFF_CONFIRM          // Confirm dialog when power off
@@ -494,7 +516,11 @@
 #define TEMP_SENSOR_5 0
 #define TEMP_SENSOR_6 0
 #define TEMP_SENSOR_7 0
+#if BOTH(KAD_SKR_MINI, KAD_SKR_BED) || ENABLED(KAD_MELZI_BED)
+#define TEMP_SENSOR_BED 1
+#else
 #define TEMP_SENSOR_BED 0
+#endif
 #define TEMP_SENSOR_PROBE 0
 #define TEMP_SENSOR_CHAMBER 0
 #define TEMP_SENSOR_COOLER 0
@@ -588,8 +614,11 @@
 #define PID_K1 0.95      // Smoothing factor within any PID loop
 
 #if ENABLED(PIDTEMP)
-  #define PID_EDIT_MENU         // Add PID editing to the "Advanced Settings" menu. (~700 bytes of PROGMEM)
-  #define PID_AUTOTUNE_MENU     // Add PID auto-tuning to the "Advanced Settings" menu. (~250 bytes of PROGMEM)
+  // KAD: 1100 bytes
+  #if DISABLED(KAD_BLTOUCH) || ENABLED(KAD_SKR_MINI_NANOLIB)
+    #define PID_EDIT_MENU         // Add PID editing to the "Advanced Settings" menu. (~700 bytes of PROGMEM)
+    #define PID_AUTOTUNE_MENU     // Add PID auto-tuning to the "Advanced Settings" menu. (~250 bytes of PROGMEM)
+  #endif
   //#define PID_PARAMS_PER_HOTEND // Uses separate PID parameters for each extruder (useful for mismatched extruders)
                                   // Set/get with gcode: M301 E[extruder number, 0-2]
 
@@ -625,6 +654,9 @@
  * the issues involved, don't use bed PID until someone else verifies that your hardware works.
  */
 //#define PIDTEMPBED
+#if BOTH(KAD_SKR_MINI, KAD_SKR_BED)
+  #define PIDTEMPBED
+#endif
 
 //#define BED_LIMIT_SWITCHING
 
@@ -718,7 +750,7 @@
  * Note: For Bowden Extruders make this large enough to allow load/unload.
  */
 #define PREVENT_LENGTHY_EXTRUDE
-#define EXTRUDE_MAXLENGTH 200
+#define EXTRUDE_MAXLENGTH 400
 
 //===========================================================================
 //======================== Thermal Runaway Protection =======================
@@ -851,9 +883,20 @@
  *          TMC5130, TMC5130_STANDALONE, TMC5160, TMC5160_STANDALONE
  * :['A4988', 'A5984', 'DRV8825', 'LV8729', 'L6470', 'L6474', 'POWERSTEP01', 'TB6560', 'TB6600', 'TMC2100', 'TMC2130', 'TMC2130_STANDALONE', 'TMC2160', 'TMC2160_STANDALONE', 'TMC2208', 'TMC2208_STANDALONE', 'TMC2209', 'TMC2209_STANDALONE', 'TMC26X', 'TMC26X_STANDALONE', 'TMC2660', 'TMC2660_STANDALONE', 'TMC5130', 'TMC5130_STANDALONE', 'TMC5160', 'TMC5160_STANDALONE']
  */
-#define X_DRIVER_TYPE  A4988
-#define Y_DRIVER_TYPE  A4988
-#define Z_DRIVER_TYPE  A4988
+#if ENABLED(KAD_SKR_MINI)
+  #define X_DRIVER_TYPE  TMC2209
+  #define Y_DRIVER_TYPE  TMC2209
+  #define Z_DRIVER_TYPE  TMC2209
+  #define E0_DRIVER_TYPE TMC2209
+#else
+  #define X_DRIVER_TYPE  A4988
+  #define Y_DRIVER_TYPE  A4988
+  #define Z_DRIVER_TYPE  A4988
+  #define E0_DRIVER_TYPE A4988
+#endif
+//#define X_DRIVER_TYPE  A4988
+//#define Y_DRIVER_TYPE  A4988
+//#define Z_DRIVER_TYPE  A4988
 //#define X2_DRIVER_TYPE A4988
 //#define Y2_DRIVER_TYPE A4988
 //#define Z2_DRIVER_TYPE A4988
@@ -862,7 +905,7 @@
 //#define I_DRIVER_TYPE  A4988
 //#define J_DRIVER_TYPE  A4988
 //#define K_DRIVER_TYPE  A4988
-#define E0_DRIVER_TYPE A4988
+//#define E0_DRIVER_TYPE A4988
 //#define E1_DRIVER_TYPE A4988
 //#define E2_DRIVER_TYPE A4988
 //#define E3_DRIVER_TYPE A4988
@@ -873,7 +916,9 @@
 
 // Enable this feature if all enabled endstop pins are interrupt-capable.
 // This will remove the need to poll the interrupt pins, saving many CPU cycles.
-//#define ENDSTOP_INTERRUPTS_FEATURE
+#if ENABLED(KAD_BLTOUCH)
+  #define ENDSTOP_INTERRUPTS_FEATURE
+#endif
 
 /**
  * Endstop Noise Threshold
@@ -1004,7 +1049,10 @@
  *
  * See https://github.com/synthetos/TinyG/wiki/Jerk-Controlled-Motion-Explained
  */
+ // KAD: 3300 bytes
+// #if DISABLED(KAD_BLTOUCH)
 #define S_CURVE_ACCELERATION
+//#endif
 
 //===========================================================================
 //============================= Z Probe Options =============================
@@ -1020,10 +1068,12 @@
  * The probe replaces the Z-MIN endstop and is used for Z homing.
  * (Automatically enables USE_PROBE_FOR_Z_HOMING.)
  */
-#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN
+//#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN
 
 // Force the use of the probe for Z-axis homing
-//#define USE_PROBE_FOR_Z_HOMING
+#if ENABLED(KAD_BLTOUCH)
+  #define USE_PROBE_FOR_Z_HOMING
+#endif
 
 /**
  * Z_MIN_PROBE_PIN
@@ -1040,7 +1090,9 @@
  *      - normally-closed switches to GND and D32.
  *      - normally-open switches to 5V and D32.
  */
-//#define Z_MIN_PROBE_PIN 32 // Pin 32 is the RAMPS default
+#if BOTH(KAD_MELZI, KAD_BLTOUCH) && DISABLED(Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN)
+  #define Z_MIN_PROBE_PIN 29 // Pin 29 is the A2 on Melzi board. Usually unused.
+#endif
 
 /**
  * Probe Type
@@ -1077,7 +1129,9 @@
 /**
  * The BLTouch probe uses a Hall effect sensor and emulates a servo.
  */
-//#define BLTOUCH
+#if ENABLED(KAD_BLTOUCH)
+  #define BLTOUCH
+#endif
 
 /**
  * Touch-MI Probe by hotends.fr
@@ -1169,11 +1223,11 @@
  *     |    [-]    |
  *     O-- FRONT --+
  */
-#define NOZZLE_TO_PROBE_OFFSET { -40, -10, 2 }
+#define NOZZLE_TO_PROBE_OFFSET { -40, -12, 0 }
 
 // Most probes should stay away from the edges of the bed, but
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
-#define PROBING_MARGIN 10
+#define PROBING_MARGIN 15
 
 // X and Y axis travel speed (mm/min) between probes
 #define XY_PROBE_FEEDRATE (133*60)
@@ -1249,7 +1303,9 @@
 #define Z_PROBE_OFFSET_RANGE_MAX 20
 
 // Enable the M48 repeatability test to test probe accuracy
-//#define Z_MIN_PROBE_REPEATABILITY_TEST
+#if ENABLED(KAD_BLTOUCH)
+  #define Z_MIN_PROBE_REPEATABILITY_TEST
+#endif
 
 // Before deploy/stow pause for user confirmation
 //#define PAUSE_BEFORE_DEPLOY_STOW
@@ -1359,12 +1415,12 @@
 // @section machine
 
 // The size of the printable area
-#define X_BED_SIZE 220
-#define Y_BED_SIZE 220
+#define X_BED_SIZE 225
+#define Y_BED_SIZE 225
 
 // Travel limits (mm) after homing, corresponding to endstop positions.
-#define X_MIN_POS -9
-#define Y_MIN_POS 0
+#define X_MIN_POS -7
+#define Y_MIN_POS -2
 #define Z_MIN_POS 0
 #define X_MAX_POS X_BED_SIZE
 #define Y_MAX_POS Y_BED_SIZE
@@ -1407,8 +1463,8 @@
   #define MAX_SOFTWARE_ENDSTOP_K
 #endif
 
-#if EITHER(MIN_SOFTWARE_ENDSTOPS, MAX_SOFTWARE_ENDSTOPS)
-  //#define SOFT_ENDSTOPS_MENU_ITEM  // Enable/Disable software endstops from the LCD
+#if EITHER(MIN_SOFTWARE_ENDSTOPS, MAX_SOFTWARE_ENDSTOPS) && ENABLED(KAD_SKR_MINI_NANOLIB)
+  #define SOFT_ENDSTOPS_MENU_ITEM  // Enable/Disable software endstops from the LCD
 #endif
 
 /**
@@ -1424,9 +1480,18 @@
  * RAMPS-based boards use SERVO3_PIN for the first runout sensor.
  * For other boards you may need to define FIL_RUNOUT_PIN, FIL_RUNOUT2_PIN, etc.
  */
-//#define FILAMENT_RUNOUT_SENSOR
+// #if ENABLED(KAD_SKR_MINI_NANOLIB)
+#if ANY(KAD_SKR_MINI_NANOLIB, KAD_SMART_FILAMENT_SENSOR, KAD_FILAMENT_SENSOR)
+  #define FILAMENT_RUNOUT_SENSOR
+  #if BOTH(KAD_MELZI, KAD_BLTOUCH)
+    // By default sensor would use pin 27. But if BLtouch also enabled, connections are:
+    // BLTouch: Pin 27 and Zmin
+    // Filament sensor: EXT-A2
+    #define FIL_RUNOUT_PIN     29
+  #endif
+#endif
 #if ENABLED(FILAMENT_RUNOUT_SENSOR)
-  #define FIL_RUNOUT_ENABLED_DEFAULT true // Enable the sensor on startup. Override with M412 followed by M500.
+  #define FIL_RUNOUT_ENABLED_DEFAULT false // Enable the sensor on startup. Override with M412 followed by M500.
   #define NUM_RUNOUT_SENSORS   1          // Number of sensors, up to one per extruder. Define a FIL_RUNOUT#_PIN for each.
 
   #define FIL_RUNOUT_STATE     LOW        // Pin state indicating that filament is NOT present.
@@ -1471,18 +1536,24 @@
   // Commands to execute on filament runout.
   // With multiple runout sensors use the %c placeholder for the current tool in commands (e.g., "M600 T%c")
   // NOTE: After 'M412 H1' the host handles filament runout and this script does not apply.
-  #define FILAMENT_RUNOUT_SCRIPT "M600"
+  #if ENABLED(KAD_MELZI)
+    #define FILAMENT_RUNOUT_SCRIPT "M25"
+  #else
+    #define FILAMENT_RUNOUT_SCRIPT "M600"
+  #endif
 
   // After a runout is detected, continue printing this length of filament
   // before executing the runout script. Useful for a sensor at the end of
   // a feed tube. Requires 4 bytes SRAM per sensor, plus 4 bytes overhead.
-  //#define FILAMENT_RUNOUT_DISTANCE_MM 25
+  #define FILAMENT_RUNOUT_DISTANCE_MM 7
 
   #ifdef FILAMENT_RUNOUT_DISTANCE_MM
     // Enable this option to use an encoder disc that toggles the runout pin
     // as the filament moves. (Be sure to set FILAMENT_RUNOUT_DISTANCE_MM
     // large enough to avoid false positives.)
-    //#define FILAMENT_MOTION_SENSOR
+    #if ANY(KAD_SKR_MINI_NANOLIB, KAD_SMART_FILAMENT_SENSOR)
+      #define FILAMENT_MOTION_SENSOR
+    #endif
   #endif
 #endif
 
@@ -1528,14 +1599,23 @@
 //#define AUTO_BED_LEVELING_LINEAR
 //#define AUTO_BED_LEVELING_BILINEAR
 //#define AUTO_BED_LEVELING_UBL
-#define MESH_BED_LEVELING
+//#define MESH_BED_LEVELING
+
+// KAD: Manual Mesh Bed Leveling is enabled via platformio build flag define
+#if ENABLED(KAD_BLTOUCH)
+  #define AUTO_BED_LEVELING_BILINEAR
+#elif ENABLED(KAD_SKR_MINI)
+  #define MESH_BED_LEVELING
+#endif
 
 /**
  * Normally G28 leaves leveling disabled on completion. Enable one of
  * these options to restore the prior leveling state or to always enable
  * leveling immediately after G28.
  */
-#define RESTORE_LEVELING_AFTER_G28
+#if ANY(MESH_BED_LEVELING, AUTO_BED_LEVELING_BILINEAR, AUTO_BED_LEVELING_UBL)
+  #define RESTORE_LEVELING_AFTER_G28
+#endif
 //#define ENABLE_LEVELING_AFTER_G28
 
 /**
@@ -1577,11 +1657,14 @@
   /**
    * Enable the G26 Mesh Validation Pattern tool.
    */
-  //#define G26_MESH_VALIDATION
+  // KAD: overflow 1.5-2kb
+  #if ENABLED(KAD_SKR_MINI_NANOLIB)
+    #define G26_MESH_VALIDATION
+  #endif
   #if ENABLED(G26_MESH_VALIDATION)
     #define MESH_TEST_NOZZLE_SIZE    0.4  // (mm) Diameter of primary nozzle.
     #define MESH_TEST_LAYER_HEIGHT   0.2  // (mm) Default layer height for G26.
-    #define MESH_TEST_HOTEND_TEMP  205    // (°C) Default nozzle temperature for G26.
+    #define MESH_TEST_HOTEND_TEMP  200    // (°C) Default nozzle temperature for G26.
     #define MESH_TEST_BED_TEMP      60    // (°C) Default bed temperature for G26.
     #define G26_XY_FEEDRATE         20    // (mm/s) Feedrate for G26 XY moves.
     #define G26_XY_FEEDRATE_TRAVEL 100    // (mm/s) Feedrate for G26 XY travel moves.
@@ -1593,7 +1676,7 @@
 #if EITHER(AUTO_BED_LEVELING_LINEAR, AUTO_BED_LEVELING_BILINEAR)
 
   // Set the number of grid points per dimension.
-  #define GRID_MAX_POINTS_X 3
+  #define GRID_MAX_POINTS_X 5
   #define GRID_MAX_POINTS_Y GRID_MAX_POINTS_X
 
   // Probe along the Y axis, advancing X after each column
@@ -1603,7 +1686,7 @@
 
     // Beyond the probed grid, continue the implied tilt?
     // Default is to maintain the height of the nearest edge.
-    //#define EXTRAPOLATE_BEYOND_GRID
+    #define EXTRAPOLATE_BEYOND_GRID
 
     //
     // Experimental Subdivision of the grid by Catmull-Rom method.
@@ -1657,12 +1740,17 @@
  * Add a bed leveling sub-menu for ABL or MBL.
  * Include a guided procedure if manual probing is enabled.
  */
-#define LCD_BED_LEVELING
+#if ANY(MESH_BED_LEVELING, AUTO_BED_LEVELING_BILINEAR, AUTO_BED_LEVELING_UBL)
+  #define LCD_BED_LEVELING
+#endif
 
 #if ENABLED(LCD_BED_LEVELING)
   #define MESH_EDIT_Z_STEP  0.025 // (mm) Step size while manually probing Z axis.
   #define LCD_PROBE_Z_RANGE 4     // (mm) Z Range centered on Z_MIN_POS for LCD Z adjustment
-  #define MESH_EDIT_MENU        // Add a menu to edit mesh points
+  // KAD: 1100 bytes
+  #if DISABLED(KAD_BLTOUCH) || ENABLED(KAD_SKR_MINI_NANOLIB)
+    #define MESH_EDIT_MENU        // Add a menu to edit mesh points
+  #endif
 #endif
 
 // Add a menu item to move between bed corners for manual bed adjustment
@@ -1727,8 +1815,9 @@
  * - Allows Z homing only when XY positions are known and trusted.
  * - If stepper drivers sleep, XY homing may be required again before Z homing.
  */
-//#define Z_SAFE_HOMING
-
+#if ENABLED(KAD_BLTOUCH)
+  #define Z_SAFE_HOMING
+#endif
 #if ENABLED(Z_SAFE_HOMING)
   #define Z_SAFE_HOMING_X_POINT X_CENTER  // X point for Z homing
   #define Z_SAFE_HOMING_Y_POINT Y_CENTER  // Y point for Z homing
@@ -1813,8 +1902,12 @@
  *   M502 - Revert settings to "factory" defaults. (Follow with M500 to init the EEPROM.)
  */
 #define EEPROM_SETTINGS     // Persistent storage with M500 and M501
-//#define DISABLE_M503        // Saves ~2700 bytes of PROGMEM. Disable for release!
-#define EEPROM_CHITCHAT       // Give feedback on EEPROM commands. Disable to save PROGMEM.
+//#if BOTH(KAD_BLTOUCH, KAD_MELZI_BED)
+//  #define DISABLE_M503        // Saves ~2700 bytes of PROGMEM. Disable for release!
+//#endif
+#if DISABLED(KAD_MELZI) || NONE(KAD_SMART_FILAMENT_SENSOR, KAD_FILAMENT_SENSOR, KAD_MELZI_BED)
+  #define EEPROM_CHITCHAT       // Give feedback on EEPROM commands. Disable to save PROGMEM.
+#endif
 #define EEPROM_BOOT_SILENT    // Keep M503 quiet and only give errors during first load
 #if ENABLED(EEPROM_SETTINGS)
   //#define EEPROM_AUTO_INIT  // Init EEPROM automatically on any errors.
@@ -1853,7 +1946,7 @@
 
 #define PREHEAT_2_LABEL       "PETG"
 #define PREHEAT_2_TEMP_HOTEND 230
-#define PREHEAT_2_TEMP_BED    110
+#define PREHEAT_2_TEMP_BED     70
 #define PREHEAT_2_TEMP_CHAMBER 35
 #define PREHEAT_2_FAN_SPEED     0 // Value from 0 to 255
 
@@ -1868,8 +1961,10 @@
  *    P1  Raise the nozzle always to Z-park height.
  *    P2  Raise the nozzle by Z-park amount, limited to Z_MAX_POS.
  */
-//#define NOZZLE_PARK_FEATURE
-
+#if ENABLED(KAD_SKR_MINI_NANOLIB)
+// #if ANY(KAD_SKR_MINI_NANOLIB, KAD_SMART_FILAMENT_SENSOR)
+  #define NOZZLE_PARK_FEATURE
+#endif
 #if ENABLED(NOZZLE_PARK_FEATURE)
   // Specify a park position as { X, Y, Z_raise }
   #define NOZZLE_PARK_POINT { (X_MIN_POS + 10), (Y_MAX_POS - 10), 20 }
@@ -2101,7 +2196,9 @@
  * just remove some extraneous menu items to recover space.
  */
 //#define NO_LCD_MENUS
-#define SLIM_LCD_MENUS
+#if DISABLED(KAD_SKR_MINI)
+  #define SLIM_LCD_MENUS
+#endif
 
 //
 // ENCODER SETTINGS
@@ -2155,7 +2252,10 @@
 //
 // Add individual axis homing items (Home X, Home Y, and Home Z) to the LCD menu.
 //
-#define INDIVIDUAL_AXIS_HOMING_MENU
+// KAD: 300 bytes
+#if DISABLED(KAD_BLTOUCH) || ENABLED(KAD_SKR_MINI_NANOLIB)
+  #define INDIVIDUAL_AXIS_HOMING_MENU
+#endif
 
 //
 // SPEAKER/BUZZER
@@ -2163,7 +2263,9 @@
 // If you have a speaker that can produce tones, enable it here.
 // By default Marlin assumes you have a buzzer with a fixed frequency.
 //
-//#define SPEAKER
+#if ENABLED(KAD_SKR_MINI)
+  #define SPEAKER
+#endif
 
 //
 // The duration and frequency for the UI feedback sound.
@@ -2172,8 +2274,10 @@
 // Note: Test audio output with the G-Code:
 //  M300 S<frequency Hz> P<duration ms>
 //
-//#define LCD_FEEDBACK_FREQUENCY_DURATION_MS 2
-//#define LCD_FEEDBACK_FREQUENCY_HZ 5000
+#if ENABLED(KAD_SKR_MINI)
+  #define LCD_FEEDBACK_FREQUENCY_DURATION_MS 20
+  #define LCD_FEEDBACK_FREQUENCY_HZ 1000
+#endif
 
 //=============================================================================
 //======================== LCD / Controller Selection =========================
@@ -2331,6 +2435,12 @@
 //=========================      (Graphical LCDs)      ========================
 //=============================================================================
 
+#if ENABLED(KAD_SKR_MINI)
+  #define CR10_STOCKDISPLAY
+#else
+  #define REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER
+#endif
+
 //
 // CONTROLLER TYPE: Graphical 128x64 (DOGM)
 //
@@ -2344,7 +2454,7 @@
 // RepRapDiscount FULL GRAPHIC Smart Controller
 // https://reprap.org/wiki/RepRapDiscount_Full_Graphic_Smart_Controller
 //
-#define REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER
+//#define REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER
 
 //
 // K.3D Full Graphic Smart Controller
@@ -2773,6 +2883,9 @@
 // which is not as annoying as with the hardware PWM. On the other hand, if this frequency
 // is too low, you should also increment SOFT_PWM_SCALE.
 //#define FAN_SOFT_PWM
+#if ENABLED(KAD_SKR_MINI)
+  #define FAN_SOFT_PWM
+#endif
 
 // Incrementing this by 1 will double the software PWM frequency,
 // affecting heaters, and the fan if FAN_SOFT_PWM is enabled.
@@ -2836,16 +2949,18 @@
 #endif
 
 // Support for Adafruit NeoPixel LED driver
-//#define NEOPIXEL_LED
+#if ENABLED(KAD_SKR_MINI_NANOLIB)
+  #define NEOPIXEL_LED
+#endif
 #if ENABLED(NEOPIXEL_LED)
-  #define NEOPIXEL_TYPE   NEO_GRBW // NEO_GRBW / NEO_GRB - four/three channel driver type (defined in Adafruit_NeoPixel.h)
+  #define NEOPIXEL_TYPE   NEO_GRB  // NEO_GRBW / NEO_GRB - four/three channel driver type (defined in Adafruit_NeoPixel.h)
   //#define NEOPIXEL_PIN     4     // LED driving pin
   //#define NEOPIXEL2_TYPE NEOPIXEL_TYPE
   //#define NEOPIXEL2_PIN    5
-  #define NEOPIXEL_PIXELS 30       // Number of LEDs in the strip. (Longest strip when NEOPIXEL2_SEPARATE is disabled.)
-  #define NEOPIXEL_IS_SEQUENTIAL   // Sequential display for temperature change - LED by LED. Disable to change all LEDs at once.
+  #define NEOPIXEL_PIXELS 16       // Number of LEDs in the strip. (Longest strip when NEOPIXEL2_SEPARATE is disabled.)
+  //#define NEOPIXEL_IS_SEQUENTIAL   // Sequential display for temperature change - LED by LED. Disable to change all LEDs at once.
   #define NEOPIXEL_BRIGHTNESS 127  // Initial brightness (0-255)
-  //#define NEOPIXEL_STARTUP_TEST  // Cycle through colors at startup
+  #define NEOPIXEL_STARTUP_TEST  // Cycle through colors at startup
 
   // Support for second Adafruit NeoPixel LED driver controlled with M150 S1 ...
   //#define NEOPIXEL2_SEPARATE
