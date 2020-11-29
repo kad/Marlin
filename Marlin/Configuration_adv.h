@@ -496,7 +496,7 @@
  * The fan turns on automatically whenever any driver is enabled and turns
  * off (or reduces to idle speed) shortly after drivers are turned off.
  */
-#if ENABLED(KAD_SKR_MINI) && DISABLED(KAD_SKR_E0_FAN)
+#if ANY(KAD_SKR_MINI, KAD_SKR_E3_TURBO) && DISABLED(KAD_SKR_E0_FAN)
   #define USE_CONTROLLER_FAN
 #endif
 #if ENABLED(USE_CONTROLLER_FAN)
@@ -520,8 +520,8 @@
 // When first starting the main fan, run it at full speed for the
 // given number of milliseconds.  This gets the fan spinning reliably
 // before setting a PWM value. (Does not work with software PWM for fan on Sanguinololu)
-#if ENABLED(KAD_SKR_MINI)
-  #define FAN_KICKSTART_TIME 100
+#if ANY(KAD_SKR_MINI, KAD_SKR_E3_TURBO)
+  #define FAN_KICKSTART_TIME 800
 #endif
 
 // Some coolers may require a non-zero "off" state.
@@ -540,8 +540,8 @@
  * Define one or both of these to override the default 0-255 range.
  */
 #if ENABLED(KAD_SKR_MINI)
-  // KAD: minimum rate for most of 2-pin fans is ~20%.
-  #define FAN_MIN_PWM 50
+  // KAD: minimum rate for most of 2-pin fans is ~15%.
+  #define FAN_MIN_PWM 32
 #endif
 //#define FAN_MAX_PWM 128
 
@@ -591,9 +591,9 @@
  * Multiple extruders can be assigned to the same pin in which case
  * the fan will turn on when any selected extruder is above the threshold.
  */
-#if BOTH(KAD_SKR_MINI, KAD_SKR_E0_FAN)
-  // Use controller fan (FAN1) as automatic heat sink fan
-  #define E0_AUTO_FAN_PIN CONTROLLER_FAN_PIN
+#if ANY(KAD_SKR_MINI, KAD_SKR_E3_TURBO) && ENABLED(KAD_SKR_E0_FAN)
+  // Use FAN1 fan (controller) as automatic heat sink fan
+  #define E0_AUTO_FAN_PIN FAN1_PIN
 #else
   #define E0_AUTO_FAN_PIN -1
 #endif
@@ -854,7 +854,7 @@
    * differs, a mode set eeprom write will be completed at initialization.
    * Use the option below to force an eeprom write to a V3.1 probe regardless.
    */
-  #if ENABLED(KAD_BLTOUCH) && DISABLED(KAD_SKR_MINI)
+  #if ENABLED(KAD_BLTOUCH) && NONE(KAD_SKR_MINI, KAD_SKR_E3_TURBO)
     #define BLTOUCH_SET_5V_MODE
   #endif
 
@@ -875,9 +875,9 @@
   //#define BLTOUCH_HS_MODE
 
   // Safety: Enable voltage mode settings in the LCD menu.
-  #if BOTH(KAD_BLTOUCH, KAD_SKR_MINI_NANOLIB)
-    #define BLTOUCH_LCD_VOLTAGE_MENU
-  #endif
+  // #if BOTH(KAD_BLTOUCH, KAD_SKR_MINI_NANOLIB)
+  //   #define BLTOUCH_LCD_VOLTAGE_MENU
+  // #endif
 
 #endif // BLTOUCH
 
@@ -944,7 +944,7 @@
 //
 // Add the G35 command to read bed corners to help adjust screws. Requires a bed probe.
 //
-#if BOTH(KAD_SKR_MINI_NANOLIB, KAD_BLTOUCH)
+#if BOTH(KAD_SKR_ENOUGH_FLASH, KAD_BLTOUCH)
   #define ASSISTED_TRAMMING
 #endif
 #if ENABLED(ASSISTED_TRAMMING)
@@ -1241,7 +1241,7 @@
 
   // Add Probe Z Offset calibration to the Z Probe Offsets menu
   #if HAS_BED_PROBE
-    #if BOTH(KAD_BLTOUCH, KAD_SKR_MINI_NANOLIB)
+    #if BOTH(KAD_BLTOUCH, KAD_SKR_ENOUGH_FLASH)
       #define PROBE_OFFSET_WIZARD
     #endif
     #if ENABLED(PROBE_OFFSET_WIZARD)
@@ -1258,7 +1258,7 @@
   #endif
 
   // Include a page of printer information in the LCD Main Menu
-  #if DISABLED(KAD_BLTOUCH) || ENABLED(KAD_SKR_MINI_NANOLIB)
+  #if DISABLED(KAD_BLTOUCH) || ENABLED(KAD_SKR_ENOUGH_FLASH)
     #define LCD_INFO_MENU
   #endif
   #if ENABLED(LCD_INFO_MENU)
@@ -1266,18 +1266,20 @@
   #endif
 
   // BACK menu items keep the highlight at the top
-  #if DISABLED(KAD_BLTOUCH) || ENABLED(KAD_SKR_MINI_NANOLIB)
+  #if DISABLED(KAD_BLTOUCH) || ENABLED(KAD_SKR_ENOUGH_FLASH)
     #define TURBO_BACK_MENU_ITEM
   #endif
 
   // Add a mute option to the LCD menu
-  //#define SOUND_MENU_ITEM
+  #if ENABLED(KAD_SKR_ENOUGH_FLASH)
+    #define SOUND_MENU_ITEM
+  #endif
 
   /**
    * LED Control Menu
    * Add LED Control to the LCD menu
    */
-  #if ENABLED(KAD_SKR_MINI_NANOLIB)
+  #if ENABLED(KAD_SKR_ENOUGH_FLASH)
     #define LED_CONTROL_MENU
   #endif
   #if ENABLED(LED_CONTROL_MENU)
@@ -1324,7 +1326,7 @@
   //#define LCD_DECIMAL_SMALL_XY
 
   // Add an 'M73' G-code to set the current percentage
-  #if DISABLED(KAD_BLTOUCH) || ENABLED(KAD_SKR_MINI_NANOLIB)
+  #if DISABLED(KAD_BLTOUCH) || ENABLED(KAD_SKR_ENOUGH_FLASH)
     #define LCD_SET_PROGRESS_MANUALLY
   #endif
 
@@ -1412,7 +1414,7 @@
    * an option on the LCD screen to continue the print from the last-known
    * point in the file.
    */
-  #if ENABLED(KAD_SKR_MINI_NANOLIB)
+  #if ENABLED(KAD_SKR_ENOUGH_FLASH)
     #define POWER_LOSS_RECOVERY
   #endif
   #if ENABLED(POWER_LOSS_RECOVERY)
@@ -1465,7 +1467,7 @@
    *  - SDSORT_CACHE_NAMES will retain the sorted file listing in RAM. (Expensive!)
    *  - SDSORT_DYNAMIC_RAM only uses RAM when the SD menu is visible. (Use with caution!)
    */
-  #if ENABLED(KAD_SKR_MINI)
+  #if ANY(KAD_SKR_MINI, KAD_SKR_E3_TURBO)
     #define SDCARD_SORT_ALPHA
   #endif
 
@@ -1487,13 +1489,13 @@
   //#define UTF_FILENAME_SUPPORT
 
   // This allows hosts to request long names for files and folders with M33
-  #if ENABLED(KAD_SKR_MINI)
+  #if ANY(KAD_SKR_MINI, KAD_SKR_E3_TURBO)
     #define LONG_FILENAME_HOST_SUPPORT
   #endif
 
   // Enable this option to scroll long filenames in the SD card menu
   // KAD: 200 bytes
-  #if DISABLED(KAD_BLTOUCH) || ENABLED(KAD_SKR_MINI_NANOLIB)
+  #if DISABLED(KAD_BLTOUCH) || ENABLED(KAD_SKR_ENOUGH_FLASH)
     #define SCROLL_LONG_FILENAMES
   #endif
 
@@ -1505,7 +1507,9 @@
    * This feature must be enabled with "M540 S1" or from the LCD menu.
    * To have any effect, endstops must be enabled during SD printing.
    */
-  //#define SD_ABORT_ON_ENDSTOP_HIT
+  #if ENABLED(KAD_SKR_ENOUGH_FLASH)
+    #define SD_ABORT_ON_ENDSTOP_HIT
+  #endif
 
   /**
    * This option makes it easier to print the same SD Card file again.
@@ -1588,7 +1592,7 @@
    * :[ 'LCD', 'ONBOARD', 'CUSTOM_CABLE' ]
    */
   //#define SDCARD_CONNECTION LCD
-  #if ENABLED(KAD_SKR_MINI)
+  #if ANY(KAD_SKR_MINI, KAD_SKR_E3_TURBO)
     #define SDCARD_CONNECTION ONBOARD
   #endif
 
@@ -1953,7 +1957,7 @@
  *
  * See https://marlinfw.org/docs/features/lin_advance.html for full instructions.
  */
-#if ENABLED(KAD_SKR_MINI_NANOLIB)
+#if ENABLED(KAD_SKR_ENOUGH_FLASH)
   #define LIN_ADVANCE
 #endif
 #if ENABLED(LIN_ADVANCE)
@@ -2100,7 +2104,9 @@
 //
 // G2/G3 Arc Support
 //
-//#define ARC_SUPPORT                 // Disable this feature to save ~3226 bytes
+#if ENABLED(KAD_SKR_ENOUGH_FLASH)
+  #define ARC_SUPPORT                 // Disable this feature to save ~3226 bytes
+#endif
 #if ENABLED(ARC_SUPPORT)
   #define MM_PER_ARC_SEGMENT      1 // (mm) Length (or minimum length) of each arc segment
   //#define ARC_SEGMENTS_PER_R    1 // Max segment length, MM_PER = Min
@@ -2256,7 +2262,7 @@
  * Currently handles M108, M112, M410, M876
  * NOTE: Not yet implemented for all platforms.
  */
-#if ENABLED(KAD_SKR_MINI)
+#if ANY(KAD_SKR_MINI, KAD_SKR_E3_TURBO)
   #define EMERGENCY_PARSER
 #endif
 
@@ -2435,8 +2441,7 @@
  *
  * Enable PARK_HEAD_ON_PAUSE to add the G-code M125 Pause and Park.
  */
-#if ENABLED(KAD_SKR_MINI_NANOLIB)
-// #if ANY(KAD_SKR_MINI_NANOLIB, KAD_SMART_FILAMENT_SENSOR)
+#if ENABLED(KAD_SKR_ENOUGH_FLASH)
   #define ADVANCED_PAUSE_FEATURE
 #endif
 #if ENABLED(ADVANCED_PAUSE_FEATURE)
@@ -2445,7 +2450,7 @@
                                                   // This short retract is done immediately, before parking the nozzle.
   #define FILAMENT_CHANGE_UNLOAD_FEEDRATE     10  // (mm/s) Unload filament feedrate. This can be pretty fast.
   #define FILAMENT_CHANGE_UNLOAD_ACCEL        25  // (mm/s^2) Lower acceleration may allow a faster feedrate.
-  #define FILAMENT_CHANGE_UNLOAD_LENGTH      400  // (mm) The length of filament for a complete unload.
+  #define FILAMENT_CHANGE_UNLOAD_LENGTH      450  // (mm) The length of filament for a complete unload.
                                                   //   For Bowden, the full length of the tube and nozzle.
                                                   //   For direct drive, the full length of the nozzle.
                                                   //   Set to 0 for manual unloading.
@@ -2454,7 +2459,7 @@
                                                   // 0 to disable start loading and skip to fast load only
   #define FILAMENT_CHANGE_FAST_LOAD_FEEDRATE   6  // (mm/s) Load filament feedrate. This can be pretty fast.
   #define FILAMENT_CHANGE_FAST_LOAD_ACCEL     25  // (mm/s^2) Lower acceleration may allow a faster feedrate.
-  #define FILAMENT_CHANGE_FAST_LOAD_LENGTH   350  // (mm) Load length of filament, from extruder gear to nozzle.
+  #define FILAMENT_CHANGE_FAST_LOAD_LENGTH   400  // (mm) Load length of filament, from extruder gear to nozzle.
                                                   //   For Bowden, the full length of the tube and nozzle.
                                                   //   For direct drive, the full length of the nozzle.
   #define ADVANCED_PAUSE_CONTINUOUS_PURGE         // Purge continuously up to the purge length until interrupted.
@@ -2846,9 +2851,9 @@
    * Set *_SERIAL_TX_PIN and *_SERIAL_RX_PIN to match for all drivers
    * on the same serial port, either here or in your board's pins file.
    */
-  #define  X_SLAVE_ADDRESS 0
-  #define  Y_SLAVE_ADDRESS 2
-  #define  Z_SLAVE_ADDRESS 1
+  //#define  X_SLAVE_ADDRESS 0
+  //#define  Y_SLAVE_ADDRESS 0
+  //#define  Z_SLAVE_ADDRESS 0
   //#define X2_SLAVE_ADDRESS 0
   //#define Y2_SLAVE_ADDRESS 0
   //#define Z2_SLAVE_ADDRESS 0
@@ -2857,7 +2862,7 @@
   //#define  I_SLAVE_ADDRESS 0
   //#define  J_SLAVE_ADDRESS 0
   //#define  K_SLAVE_ADDRESS 0
-  #define E0_SLAVE_ADDRESS 3
+  //#define E0_SLAVE_ADDRESS 0
   //#define E1_SLAVE_ADDRESS 0
   //#define E2_SLAVE_ADDRESS 0
   //#define E3_SLAVE_ADDRESS 0
@@ -3664,7 +3669,7 @@
 /**
  * Disable all Volumetric extrusion options
  */
-#if DISABLED(KAD_SKR_MINI_NANOLIB)
+#if DISABLED(KAD_SKR_ENOUGH_FLASH)
   #define NO_VOLUMETRICS
 #endif
 
@@ -3698,12 +3703,12 @@
  *  - M206 and M428 are disabled.
  *  - G92 will revert to its behavior from Marlin 1.0.
  */
-#if DISABLED(KAD_SKR_MINI_NANOLIB)
+#if DISABLED(KAD_SKR_ENOUGH_FLASH)
   #define NO_WORKSPACE_OFFSETS
 #endif
 
 // Extra options for the M114 "Current Position" report
-#if ENABLED(KAD_SKR_MINI_NANOLIB)
+#if ENABLED(KAD_SKR_ENOUGH_FLASH)
   #define M114_DETAIL         // Use 'M114` for details to check planner calculations
   #define M114_REALTIME       // Real current position based on forward kinematics
   //#define M114_LEGACY         // M114 used to synchronize on every call. Enable if needed.
@@ -4228,7 +4233,7 @@
 //
 // M42 - Set pin states
 //
-#if ENABLED(KAD_SKR_MINI_NANOLIB)
+#if ENABLED(KAD_SKR_ENOUGH_FLASH)
   #define DIRECT_PIN_CONTROL
 #endif
 

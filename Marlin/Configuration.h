@@ -74,6 +74,7 @@
 #else
   #define STRING_CONFIG_H_AUTHOR "(kad, Anycubic Mega Zero)" // Who made the changes.
 #endif
+
 //#define CUSTOM_VERSION_FILE Version.h // Path from the root directory (no quotes)
 
 /**
@@ -91,7 +92,7 @@
 #define SHOW_BOOTSCREEN
 
 // KAD: 500 bytes
-#if DISABLED(KAD_BLTOUCH) || ENABLED(KAD_SKR_MINI_NANOLIB)
+#if DISABLED(KAD_BLTOUCH) || ENABLED(KAD_SKR_ENOUGH_FLASH)
 // Show the bitmap in Marlin/_Bootscreen.h on startup.
   #define SHOW_CUSTOM_BOOTSCREEN
 #endif
@@ -115,6 +116,9 @@
 #if ENABLED(KAD_SKR_MINI)
   #define SERIAL_PORT -1
   #define SERIAL_PORT_2 2
+#elif ENABLED(KAD_SKR_E3_TURBO)
+  #define SERIAL_PORT -1
+  #define SERIAL_PORT_2 0
 #else
   #define SERIAL_PORT 0
 #endif
@@ -157,6 +161,8 @@
   #if ENABLED(KAD_SKR_MINI)
     //#define MOTHERBOARD BOARD_BTT_SKR_MINI_E3_V2_0
     #define MOTHERBOARD BOARD_BTT_SKR_MINI_MZ_V1_0
+  #elif ENABLED(KAD_SKR_E3_TURBO)
+    #define MOTHERBOARD BOARD_BTT_SKR_E3_TURBO
   #else
     #define MOTHERBOARD BOARD_MELZI_CREALITY
   #endif
@@ -383,7 +389,7 @@
  * Enable and connect the power supply to the PS_ON_PIN.
  * Specify whether the power supply is active HIGH or active LOW.
  */
-#if ENABLED(KAD_SKR_MINI_NANOLIB)
+#if ENABLED(KAD_SKR_ENOUGH_FLASH)
   #define PSU_CONTROL
   #define PSU_NAME "Power Supply"
 #endif
@@ -516,7 +522,7 @@
 #define TEMP_SENSOR_5 0
 #define TEMP_SENSOR_6 0
 #define TEMP_SENSOR_7 0
-#if BOTH(KAD_SKR_MINI, KAD_SKR_BED) || ENABLED(KAD_MELZI_BED)
+#if ANY(KAD_SKR_BED, KAD_MELZI_BED)
 #define TEMP_SENSOR_BED 1
 #else
 #define TEMP_SENSOR_BED 0
@@ -615,7 +621,7 @@
 
 #if ENABLED(PIDTEMP)
   // KAD: 1100 bytes
-  #if DISABLED(KAD_BLTOUCH) || ENABLED(KAD_SKR_MINI_NANOLIB)
+  #if DISABLED(KAD_BLTOUCH) || ENABLED(KAD_SKR_ENOUGH_FLASH)
     #define PID_EDIT_MENU         // Add PID editing to the "Advanced Settings" menu. (~700 bytes of PROGMEM)
     #define PID_AUTOTUNE_MENU     // Add PID auto-tuning to the "Advanced Settings" menu. (~250 bytes of PROGMEM)
   #endif
@@ -654,7 +660,7 @@
  * the issues involved, don't use bed PID until someone else verifies that your hardware works.
  */
 //#define PIDTEMPBED
-#if BOTH(KAD_SKR_MINI, KAD_SKR_BED)
+#if ENABLED(KAD_SKR_BED)
   #define PIDTEMPBED
 #endif
 
@@ -750,7 +756,7 @@
  * Note: For Bowden Extruders make this large enough to allow load/unload.
  */
 #define PREVENT_LENGTHY_EXTRUDE
-#define EXTRUDE_MAXLENGTH 400
+#define EXTRUDE_MAXLENGTH 600
 
 //===========================================================================
 //======================== Thermal Runaway Protection =======================
@@ -883,7 +889,7 @@
  *          TMC5130, TMC5130_STANDALONE, TMC5160, TMC5160_STANDALONE
  * :['A4988', 'A5984', 'DRV8825', 'LV8729', 'L6470', 'L6474', 'POWERSTEP01', 'TB6560', 'TB6600', 'TMC2100', 'TMC2130', 'TMC2130_STANDALONE', 'TMC2160', 'TMC2160_STANDALONE', 'TMC2208', 'TMC2208_STANDALONE', 'TMC2209', 'TMC2209_STANDALONE', 'TMC26X', 'TMC26X_STANDALONE', 'TMC2660', 'TMC2660_STANDALONE', 'TMC5130', 'TMC5130_STANDALONE', 'TMC5160', 'TMC5160_STANDALONE']
  */
-#if ENABLED(KAD_SKR_MINI)
+#if ANY(KAD_SKR_MINI, KAD_SKR_E3_TURBO)
   #define X_DRIVER_TYPE  TMC2209
   #define Y_DRIVER_TYPE  TMC2209
   #define Z_DRIVER_TYPE  TMC2209
@@ -916,7 +922,7 @@
 
 // Enable this feature if all enabled endstop pins are interrupt-capable.
 // This will remove the need to poll the interrupt pins, saving many CPU cycles.
-#if ENABLED(KAD_BLTOUCH)
+#if ENABLED(KAD_BLTOUCH) && DISABLED(KAD_SKR_E3_TURBO)
   #define ENDSTOP_INTERRUPTS_FEATURE
 #endif
 
@@ -1463,7 +1469,7 @@
   #define MAX_SOFTWARE_ENDSTOP_K
 #endif
 
-#if EITHER(MIN_SOFTWARE_ENDSTOPS, MAX_SOFTWARE_ENDSTOPS) && ENABLED(KAD_SKR_MINI_NANOLIB)
+#if EITHER(MIN_SOFTWARE_ENDSTOPS, MAX_SOFTWARE_ENDSTOPS) && ENABLED(KAD_SKR_ENOUGH_FLASH)
   #define SOFT_ENDSTOPS_MENU_ITEM  // Enable/Disable software endstops from the LCD
 #endif
 
@@ -1480,8 +1486,7 @@
  * RAMPS-based boards use SERVO3_PIN for the first runout sensor.
  * For other boards you may need to define FIL_RUNOUT_PIN, FIL_RUNOUT2_PIN, etc.
  */
-// #if ENABLED(KAD_SKR_MINI_NANOLIB)
-#if ANY(KAD_SKR_MINI_NANOLIB, KAD_SMART_FILAMENT_SENSOR, KAD_FILAMENT_SENSOR)
+#if ANY(KAD_SKR_ENOUGH_FLASH, KAD_SMART_FILAMENT_SENSOR, KAD_FILAMENT_SENSOR)
   #define FILAMENT_RUNOUT_SENSOR
   #if BOTH(KAD_MELZI, KAD_BLTOUCH)
     // By default sensor would use pin 27. But if BLtouch also enabled, connections are:
@@ -1551,7 +1556,7 @@
     // Enable this option to use an encoder disc that toggles the runout pin
     // as the filament moves. (Be sure to set FILAMENT_RUNOUT_DISTANCE_MM
     // large enough to avoid false positives.)
-    #if ANY(KAD_SKR_MINI_NANOLIB, KAD_SMART_FILAMENT_SENSOR)
+    #if ANY(KAD_SKR_ENOUGH_FLASH, KAD_SMART_FILAMENT_SENSOR)
       #define FILAMENT_MOTION_SENSOR
     #endif
   #endif
@@ -1604,7 +1609,7 @@
 // KAD: Manual Mesh Bed Leveling is enabled via platformio build flag define
 #if ENABLED(KAD_BLTOUCH)
   #define AUTO_BED_LEVELING_BILINEAR
-#elif ENABLED(KAD_SKR_MINI)
+#elif ANY(KAD_SKR_MINI, KAD_SKR_E3_TURBO)
   #define MESH_BED_LEVELING
 #endif
 
@@ -1658,7 +1663,7 @@
    * Enable the G26 Mesh Validation Pattern tool.
    */
   // KAD: overflow 1.5-2kb
-  #if ENABLED(KAD_SKR_MINI_NANOLIB)
+  #if ENABLED(KAD_SKR_ENOUGH_FLASH)
     #define G26_MESH_VALIDATION
   #endif
   #if ENABLED(G26_MESH_VALIDATION)
@@ -1668,7 +1673,7 @@
     #define MESH_TEST_BED_TEMP      60    // (°C) Default bed temperature for G26.
     #define G26_XY_FEEDRATE         20    // (mm/s) Feedrate for G26 XY moves.
     #define G26_XY_FEEDRATE_TRAVEL 100    // (mm/s) Feedrate for G26 XY travel moves.
-    #define G26_RETRACT_MULTIPLIER   1.0  // G26 Q (retraction) used by default between mesh test elements.
+    #define G26_RETRACT_MULTIPLIER   5.0  // G26 Q (retraction) used by default between mesh test elements.
   #endif
 
 #endif
@@ -1748,7 +1753,7 @@
   #define MESH_EDIT_Z_STEP  0.025 // (mm) Step size while manually probing Z axis.
   #define LCD_PROBE_Z_RANGE 4     // (mm) Z Range centered on Z_MIN_POS for LCD Z adjustment
   // KAD: 1100 bytes
-  #if DISABLED(KAD_BLTOUCH) || ENABLED(KAD_SKR_MINI_NANOLIB)
+  #if DISABLED(KAD_BLTOUCH) || ENABLED(KAD_SKR_ENOUGH_FLASH)
     #define MESH_EDIT_MENU        // Add a menu to edit mesh points
   #endif
 #endif
@@ -1961,8 +1966,7 @@
  *    P1  Raise the nozzle always to Z-park height.
  *    P2  Raise the nozzle by Z-park amount, limited to Z_MAX_POS.
  */
-#if ENABLED(KAD_SKR_MINI_NANOLIB)
-// #if ANY(KAD_SKR_MINI_NANOLIB, KAD_SMART_FILAMENT_SENSOR)
+#if ENABLED(KAD_SKR_ENOUGH_FLASH)
   #define NOZZLE_PARK_FEATURE
 #endif
 #if ENABLED(NOZZLE_PARK_FEATURE)
@@ -2196,7 +2200,7 @@
  * just remove some extraneous menu items to recover space.
  */
 //#define NO_LCD_MENUS
-#if DISABLED(KAD_SKR_MINI)
+#if ENABLED(KAD_MELZI)
   #define SLIM_LCD_MENUS
 #endif
 
@@ -2253,7 +2257,7 @@
 // Add individual axis homing items (Home X, Home Y, and Home Z) to the LCD menu.
 //
 // KAD: 300 bytes
-#if DISABLED(KAD_BLTOUCH) || ENABLED(KAD_SKR_MINI_NANOLIB)
+#if DISABLED(KAD_BLTOUCH) || ENABLED(KAD_SKR_ENOUGH_FLASH)
   #define INDIVIDUAL_AXIS_HOMING_MENU
 #endif
 
@@ -2263,9 +2267,7 @@
 // If you have a speaker that can produce tones, enable it here.
 // By default Marlin assumes you have a buzzer with a fixed frequency.
 //
-#if ENABLED(KAD_SKR_MINI)
-  #define SPEAKER
-#endif
+//#define SPEAKER
 
 //
 // The duration and frequency for the UI feedback sound.
@@ -2274,7 +2276,7 @@
 // Note: Test audio output with the G-Code:
 //  M300 S<frequency Hz> P<duration ms>
 //
-#if ENABLED(KAD_SKR_MINI)
+#if ANY(KAD_SKR_MINI, KAD_SKR_E3_TURBO)
   #define LCD_FEEDBACK_FREQUENCY_DURATION_MS 20
   #define LCD_FEEDBACK_FREQUENCY_HZ 1000
 #endif
@@ -2435,7 +2437,7 @@
 //=========================      (Graphical LCDs)      ========================
 //=============================================================================
 
-#if ENABLED(KAD_SKR_MINI)
+#if ANY(KAD_SKR_MINI, KAD_SKR_E3_TURBO)
   #define CR10_STOCKDISPLAY
 #else
   #define REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER
@@ -2949,7 +2951,7 @@
 #endif
 
 // Support for Adafruit NeoPixel LED driver
-#if ENABLED(KAD_SKR_MINI_NANOLIB)
+#if ENABLED(KAD_SKR_ENOUGH_FLASH)
   #define NEOPIXEL_LED
 #endif
 #if ENABLED(NEOPIXEL_LED)
