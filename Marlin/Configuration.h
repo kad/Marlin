@@ -69,11 +69,22 @@
 // @section info
 
 // Author info of this build printed to the host during boot and M115
-#if ENABLED(KAD_BLTOUCH)
-  #define STRING_CONFIG_H_AUTHOR "(kad, Anycubic Mega Zero BLTouch)" // Who made the changes.
+#if ENABLED(KAD_PSU_24V)
+  #define KAD_MZ_VERSION " 2.0"
+  #define KAD_STR_PSU " 24V"
 #else
-  #define STRING_CONFIG_H_AUTHOR "(kad, Anycubic Mega Zero)" // Who made the changes.
+  #define KAD_MZ_VERSION ""
+  #define KAD_STR_PSU " 12V"
 #endif
+#if ENABLED(KAD_BLTOUCH)
+  #define KAD_STR_VARIANT " ABL"
+#elif ANY(MESH_BED_LEVELING, KAD_SKR_MINI, KAD_SKR_E3_TURBO)
+  #define KAD_STR_VARIANT " MBL"
+#else
+  #define KAD_STR_VARIANT ""
+#endif
+
+#define STRING_CONFIG_H_AUTHOR "(kad, Anycubic Mega Zero" KAD_MZ_VERSION KAD_STR_VARIANT KAD_STR_PSU ")" // Who made the changes.
 
 //#define CUSTOM_VERSION_FILE Version.h // Path from the root directory (no quotes)
 
@@ -169,7 +180,7 @@
 #endif
 
 // Name displayed in the LCD "Ready" message and Info menu
-#define CUSTOM_MACHINE_NAME "Mega Zero"
+#define CUSTOM_MACHINE_NAME "Mega Zero" KAD_MZ_VERSION
 
 // Printer's unique ID, used by some programs to differentiate between machines.
 // Choose your own or use a service like https://www.uuidgenerator.net/version4
@@ -391,7 +402,7 @@
  */
 #if ENABLED(KAD_SKR_ENOUGH_FLASH)
   #define PSU_CONTROL
-  #define PSU_NAME "Power Supply"
+  #define PSU_NAME "Power Supply:" KAD_STR_PSU
 #endif
 
 #if ENABLED(PSU_CONTROL)

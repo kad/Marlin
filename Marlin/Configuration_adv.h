@@ -1338,7 +1338,9 @@
   // KAD: 420 bytes
   // #if DISABLED(KAD_BLTOUCH)
   // #if DISABLED(KAD_MELZI) || NONE(KAD_SMART_FILAMENT_SENSOR, KAD_FILAMENT_SENSOR)
-  #define SHOW_REMAINING_TIME       // Display estimated time to completion
+  #if DISABLED(KAD_MELZI_BED)
+    #define SHOW_REMAINING_TIME       // Display estimated time to completion
+  #endif
   // #endif
   #if ENABLED(SHOW_REMAINING_TIME)
     #define USE_M73_REMAINING_TIME    // Use remaining time from M73 command instead of estimation
@@ -2906,7 +2908,11 @@
    * Define your own with:
    * { <off_time[1..15]>, <hysteresis_end[-3..12]>, hysteresis_start[1..8] }
    */
-  #define CHOPPER_TIMING CHOPPER_DEFAULT_12V        // All axes (override below)
+  #if ENABLED(KAD_PSU_24V)
+    #define CHOPPER_TIMING CHOPPER_DEFAULT_24V        // All axes (override below)
+  #else
+    #define CHOPPER_TIMING CHOPPER_DEFAULT_12V        // All axes (override below)
+  #endif
   //#define CHOPPER_TIMING_X  CHOPPER_TIMING        // For X Axes (override below)
   //#define CHOPPER_TIMING_X2 CHOPPER_TIMING_X
   //#define CHOPPER_TIMING_Y  CHOPPER_TIMING        // For Y Axes (override below)
