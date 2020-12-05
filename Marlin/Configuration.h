@@ -230,13 +230,19 @@
 
 // This defines the number of extruders
 // :[0, 1, 2, 3, 4, 5, 6, 7, 8]
-#define EXTRUDERS 1
+#if ENABLED(KAD_SKR_E3_TURBO) && ANY(KAD_SKR_E3_TURBO_2TO1, KAD_SKR_E3_TURBO_2E)
+  #define EXTRUDERS 2
+#else
+  #define EXTRUDERS 1
+#endif
 
 // Generally expected filament diameter (1.75, 2.85, 3.0, ...). Used for Volumetric, Filament Width Sensor, etc.
 #define DEFAULT_NOMINAL_FILAMENT_DIA 1.75
 
 // For Cyclops or any "multi-extruder" that shares a single nozzle.
-//#define SINGLENOZZLE
+#if BOTH(KAD_SKR_E3_TURBO, KAD_SKR_E3_TURBO_2TO1)
+  #define SINGLENOZZLE
+#endif
 
 // Save and restore temperature and fan speed on tool-change.
 // Set standby for the unselected tool with M104/106/109 T...
@@ -526,7 +532,11 @@
  *
  */
 #define TEMP_SENSOR_0 1
-#define TEMP_SENSOR_1 0
+#if BOTH(KAD_SKR_E3_TURBO, KAD_SKR_E3_TURBO_2E)
+  #define TEMP_SENSOR_1 1
+#else
+  #define TEMP_SENSOR_1 0
+#endif
 #define TEMP_SENSOR_2 0
 #define TEMP_SENSOR_3 0
 #define TEMP_SENSOR_4 0
@@ -905,6 +915,9 @@
   #define Y_DRIVER_TYPE  TMC2209
   #define Z_DRIVER_TYPE  TMC2209
   #define E0_DRIVER_TYPE TMC2209
+  #if ENABLED(KAD_SKR_E3_TURBO) && ANY(KAD_SKR_E3_TURBO_2TO1, KAD_SKR_E3_TURBO_2E)
+    #define E1_DRIVER_TYPE TMC2209
+  #endif
 #else
   #define X_DRIVER_TYPE  A4988
   #define Y_DRIVER_TYPE  A4988
