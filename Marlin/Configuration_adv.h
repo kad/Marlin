@@ -1694,6 +1694,11 @@
   //#define STATUS_FAN_FRAMES 3       // :[0,1,2,3,4] Number of fan animation frames
   //#define STATUS_HEAT_PERCENT       // Show heating in a progress bar
   //#define BOOT_MARLIN_LOGO_ANIMATED // Animated Marlin logo. Costs ~‭3260 (or ~940) bytes of PROGMEM.
+  #if ENABLED(KAD_SKR_ENOUGH_FLASH)
+    #define STATUS_FAN_FRAMES 4       // :[0,1,2,3,4] Number of fan animation frames
+    #define STATUS_HEAT_PERCENT       // Show heating in a progress bar
+    #define BOOT_MARLIN_LOGO_ANIMATED // Animated Marlin logo. Costs ~‭3260 (or ~940) bytes of PROGMEM.
+  #endif
 
   // Frivolous Game Options
   //#define MARLIN_BRICKOUT
