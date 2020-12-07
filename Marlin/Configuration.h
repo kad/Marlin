@@ -544,9 +544,9 @@
 #define TEMP_SENSOR_6 0
 #define TEMP_SENSOR_7 0
 #if ANY(KAD_SKR_BED, KAD_MELZI_BED)
-#define TEMP_SENSOR_BED 1
+  #define TEMP_SENSOR_BED 1
 #else
-#define TEMP_SENSOR_BED 0
+  #define TEMP_SENSOR_BED 0
 #endif
 #define TEMP_SENSOR_PROBE 0
 #define TEMP_SENSOR_CHAMBER 0
@@ -1931,9 +1931,9 @@
  *   M502 - Revert settings to "factory" defaults. (Follow with M500 to init the EEPROM.)
  */
 #define EEPROM_SETTINGS     // Persistent storage with M500 and M501
-//#if BOTH(KAD_BLTOUCH, KAD_MELZI_BED)
-//  #define DISABLE_M503        // Saves ~2700 bytes of PROGMEM. Disable for release!
-//#endif
+#if BOTH(KAD_BLTOUCH, KAD_MELZI_BED)
+ #define DISABLE_M503        // Saves ~2700 bytes of PROGMEM. Disable for release!
+#endif
 #if DISABLED(KAD_MELZI) || NONE(KAD_SMART_FILAMENT_SENSOR, KAD_FILAMENT_SENSOR, KAD_MELZI_BED)
   #define EEPROM_CHITCHAT       // Give feedback on EEPROM commands. Disable to save PROGMEM.
 #endif
