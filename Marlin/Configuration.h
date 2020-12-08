@@ -71,10 +71,10 @@
 // Author info of this build printed to the host during boot and M115
 #if ENABLED(KAD_PSU_24V)
   #define KAD_MZ_VERSION " 2.0"
-  #define KAD_STR_PSU " 24V"
+  #define KAD_STR_PSU "24V"
 #else
   #define KAD_MZ_VERSION ""
-  #define KAD_STR_PSU " 12V"
+  #define KAD_STR_PSU "12V"
 #endif
 #if ENABLED(KAD_BLTOUCH)
   #define KAD_STR_VARIANT " ABL"
@@ -84,7 +84,7 @@
   #define KAD_STR_VARIANT ""
 #endif
 
-#define STRING_CONFIG_H_AUTHOR "(kad, Anycubic Mega Zero" KAD_MZ_VERSION KAD_STR_VARIANT KAD_STR_PSU ")" // Who made the changes.
+#define STRING_CONFIG_H_AUTHOR "(kad, Anycubic Mega Zero" KAD_MZ_VERSION KAD_STR_VARIANT " " KAD_STR_PSU ")" // Who made the changes.
 
 //#define CUSTOM_VERSION_FILE Version.h // Path from the root directory (no quotes)
 
@@ -408,7 +408,7 @@
  */
 #if ENABLED(KAD_SKR_ENOUGH_FLASH)
   #define PSU_CONTROL
-  #define PSU_NAME "PSU" KAD_STR_PSU
+  #define PSU_NAME KAD_STR_PSU
 #endif
 
 #if ENABLED(PSU_CONTROL)
@@ -1523,7 +1523,11 @@
 #endif
 #if ENABLED(FILAMENT_RUNOUT_SENSOR)
   #define FIL_RUNOUT_ENABLED_DEFAULT false // Enable the sensor on startup. Override with M412 followed by M500.
-  #define NUM_RUNOUT_SENSORS   1          // Number of sensors, up to one per extruder. Define a FIL_RUNOUT#_PIN for each.
+  #if ENABLED(KAD_SKR_E3_TURBO) && ANY(KAD_SKR_E3_TURBO_2TO1, KAD_SKR_E3_TURBO_2E)
+    #define NUM_RUNOUT_SENSORS   2          // Number of sensors, up to one per extruder. Define a FIL_RUNOUT#_PIN for each.
+  #else
+    #define NUM_RUNOUT_SENSORS   1          // Number of sensors, up to one per extruder. Define a FIL_RUNOUT#_PIN for each.
+  #endif
 
   #define FIL_RUNOUT_STATE     LOW        // Pin state indicating that filament is NOT present.
   #define FIL_RUNOUT_PULLUP               // Use internal pullup for filament runout pins.
