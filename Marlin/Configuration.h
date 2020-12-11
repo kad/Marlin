@@ -380,7 +380,9 @@
  *   - This implementation supports up to two mixing extruders.
  *   - Enable DIRECT_MIXING_IN_G1 for M165 and mixing in G1 (from Pia Taubert's reference implementation).
  */
-//#define MIXING_EXTRUDER
+#if BOTH(KAD_SKR_E3_TURBO, KAD_SKR_E3_TURBO_2MIX)
+  #define MIXING_EXTRUDER
+#endif
 #if ENABLED(MIXING_EXTRUDER)
   #define MIXING_STEPPERS 2        // Number of steppers in your mixing extruder
   #define MIXING_VIRTUAL_TOOLS 16  // Use the Virtual Tool method with M163 and M164
@@ -915,7 +917,7 @@
   #define Y_DRIVER_TYPE  TMC2209
   #define Z_DRIVER_TYPE  TMC2209
   #define E0_DRIVER_TYPE TMC2209
-  #if ENABLED(KAD_SKR_E3_TURBO) && ANY(KAD_SKR_E3_TURBO_2TO1, KAD_SKR_E3_TURBO_2E)
+  #if ENABLED(KAD_SKR_E3_TURBO) && ANY(KAD_SKR_E3_TURBO_2TO1, KAD_SKR_E3_TURBO_2E, KAD_SKR_E3_TURBO_2MIX)
     #define E1_DRIVER_TYPE TMC2209
   #endif
 #else
@@ -985,7 +987,7 @@
  * following movement settings. If fewer factors are given than the
  * total number of extruders, the last value applies to the rest.
  */
-#if ENABLED(KAD_SKR_E3_TURBO) && ANY(KAD_SKR_E3_TURBO_2TO1, KAD_SKR_E3_TURBO_2E)
+#if ENABLED(KAD_SKR_E3_TURBO) && ANY(KAD_SKR_E3_TURBO_2TO1, KAD_SKR_E3_TURBO_2E, KAD_SKR_E3_TURBO_2MIX)
   #define DISTINCT_E_FACTORS
 #endif
 
@@ -1523,7 +1525,7 @@
 #endif
 #if ENABLED(FILAMENT_RUNOUT_SENSOR)
   #define FIL_RUNOUT_ENABLED_DEFAULT false // Enable the sensor on startup. Override with M412 followed by M500.
-  #if ENABLED(KAD_SKR_E3_TURBO) && ANY(KAD_SKR_E3_TURBO_2TO1, KAD_SKR_E3_TURBO_2E)
+  #if ENABLED(KAD_SKR_E3_TURBO) && ANY(KAD_SKR_E3_TURBO_2TO1, KAD_SKR_E3_TURBO_2E, KAD_SKR_E3_TURBO_2MIX)
     #define NUM_RUNOUT_SENSORS   2          // Number of sensors, up to one per extruder. Define a FIL_RUNOUT#_PIN for each.
   #else
     #define NUM_RUNOUT_SENSORS   1          // Number of sensors, up to one per extruder. Define a FIL_RUNOUT#_PIN for each.
