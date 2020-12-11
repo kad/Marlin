@@ -1638,7 +1638,11 @@
 
 // KAD: Manual Mesh Bed Leveling is enabled via platformio build flag define
 #if ENABLED(KAD_BLTOUCH)
-  #define AUTO_BED_LEVELING_BILINEAR
+  #if BOTH(KAD_SKR_E3_TURBO, KAD_SKR_UBL)
+    #define AUTO_BED_LEVELING_UBL
+  #else
+    #define AUTO_BED_LEVELING_BILINEAR
+  #endif
 #elif ANY(KAD_SKR_MINI, KAD_SKR_E3_TURBO)
   #define MESH_BED_LEVELING
 #endif
@@ -1741,7 +1745,7 @@
   //========================= Unified Bed Leveling ============================
   //===========================================================================
 
-  //#define MESH_EDIT_GFX_OVERLAY   // Display a graphics overlay while editing the mesh
+  #define MESH_EDIT_GFX_OVERLAY   // Display a graphics overlay while editing the mesh
 
   #define MESH_INSET 1              // Set Mesh bounds as an inset region of the bed
   #define GRID_MAX_POINTS_X 10      // Don't use more than 15 points per axis, implementation limited.
