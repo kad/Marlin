@@ -23,9 +23,9 @@ if board not in ('melzi', 'btt'):
 board_variant = ""
 if board == 'btt':
     board_variant = parts[4]
-    if board_variant == "stdlib":
-        print("Error: dynamic build parameters expect to work only with nanolib", file=sys.stderr)
-        exit(1)
+    # if board_variant == "stdlib":
+    #     print("Error: dynamic build parameters expect to work only with nanolib", file=sys.stderr)
+    #     exit(1)
 
 ignores = ("anycubic", "mega", "zero", "zero2", "melzi", "btt", "stdlib", "mini", "e3turbo", "dynamic")
 known = ("24v", "bl", "a2", "zmin", "bed", "e0fan", "ubl", "2e", "2to1", "2mix", "fs", "sfs")
