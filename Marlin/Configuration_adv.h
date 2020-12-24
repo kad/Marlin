@@ -1584,7 +1584,9 @@
   #endif
 
   // Add an optimized binary file transfer mode, initiated with 'M28 B1'
-  //#define BINARY_FILE_TRANSFER
+  #if ENABLED(KAD_SKR_ENOUGH_FLASH)
+    #define BINARY_FILE_TRANSFER
+  #endif
 
   /**
    * Set this option to one of the following (or the board's defaults apply):
