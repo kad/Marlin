@@ -109,9 +109,9 @@
 #endif
 
 // Show the bitmap in Marlin/_Statusscreen.h on the status screen.
-#if DISABLED(KAD_MELZI_BED)
+//#if DISABLED(KAD_MELZI_BED)
   #define CUSTOM_STATUS_SCREEN_IMAGE
-#endif
+//#endif
 
 // @section machine
 
@@ -1733,7 +1733,9 @@
     // Experimental Subdivision of the grid by Catmull-Rom method.
     // Synthesizes intermediate points to produce a more detailed mesh.
     //
-    #define ABL_BILINEAR_SUBDIVISION
+    #if ENABLED(KAD_SKR_ENOUGH_FLASH)
+      #define ABL_BILINEAR_SUBDIVISION
+    #endif
     #if ENABLED(ABL_BILINEAR_SUBDIVISION)
       // Number of subdivisions between probe points
       #define BILINEAR_SUBDIVISIONS 3
