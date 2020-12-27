@@ -683,7 +683,7 @@
  * the issues involved, don't use bed PID until someone else verifies that your hardware works.
  */
 //#define PIDTEMPBED
-#if ENABLED(KAD_SKR_BED)
+#if ANY(KAD_SKR_BED, KAD_MELZI_BED)
   #define PIDTEMPBED
 #endif
 
@@ -703,9 +703,14 @@
 
   // 120V 250W silicone heater into 4mm borosilicate (MendelMax 1.5+)
   // from FOPDT model - kp=.39 Tp=405 Tdead=66, Tc set to 79.2, aggressive factor of .15 (vs .1, 1, 10)
-  #define DEFAULT_bedKp 10.00
-  #define DEFAULT_bedKi .023
-  #define DEFAULT_bedKd 305.4
+  //#define DEFAULT_bedKp 10.00
+  //#define DEFAULT_bedKi .023
+  //#define DEFAULT_bedKd 305.4
+
+  // Mega Zero 2 stock bed/board/firmware, 70 degrees.
+  #define DEFAULT_bedKp 350
+  #define DEFAULT_bedKi 63
+  #define DEFAULT_bedKd 452
 
   // FIND YOUR OWN: "M303 E-1 C8 S90" to run autotune on the bed at 90 degreesC for 8 cycles.
 #endif // PIDTEMPBED
@@ -1084,9 +1089,7 @@
  * See https://github.com/synthetos/TinyG/wiki/Jerk-Controlled-Motion-Explained
  */
  // KAD: 3300 bytes
-// #if DISABLED(KAD_BLTOUCH)
 #define S_CURVE_ACCELERATION
-//#endif
 
 //===========================================================================
 //============================= Z Probe Options =============================
@@ -1337,7 +1340,7 @@
 #define Z_PROBE_OFFSET_RANGE_MAX 20
 
 // Enable the M48 repeatability test to test probe accuracy
-#if ENABLED(KAD_BLTOUCH)
+#if ENABLED(KAD_BLTOUCH) && DISABLED(KAD_MELZI_BED)
   #define Z_MIN_PROBE_REPEATABILITY_TEST
 #endif
 
@@ -1945,9 +1948,7 @@
  *   M502 - Revert settings to "factory" defaults. (Follow with M500 to init the EEPROM.)
  */
 #define EEPROM_SETTINGS     // Persistent storage with M500 and M501
-#if BOTH(KAD_BLTOUCH, KAD_MELZI_BED)
- #define DISABLE_M503        // Saves ~2700 bytes of PROGMEM. Disable for release!
-#endif
+//#define DISABLE_M503        // Saves ~2700 bytes of PROGMEM. Disable for release!
 #if DISABLED(KAD_MELZI) || NONE(KAD_SMART_FILAMENT_SENSOR, KAD_FILAMENT_SENSOR, KAD_MELZI_BED)
   #define EEPROM_CHITCHAT       // Give feedback on EEPROM commands. Disable to save PROGMEM.
 #endif
