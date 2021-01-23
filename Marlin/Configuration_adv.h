@@ -1343,7 +1343,9 @@
   #endif
   // #endif
   #if ENABLED(SHOW_REMAINING_TIME)
-    #define USE_M73_REMAINING_TIME    // Use remaining time from M73 command instead of estimation
+    #if ENABLED(LCD_SET_PROGRESS_MANUALLY)
+      #define USE_M73_REMAINING_TIME    // Use remaining time from M73 command instead of estimation
+    #endif
     #define ROTATE_PROGRESS_DISPLAY   // Display (P)rogress, (E)lapsed, and (R)emaining time
   #endif
 
