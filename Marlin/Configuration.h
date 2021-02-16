@@ -1163,6 +1163,11 @@
 //#define Z_PROBE_SERVO_NR 0       // Defaults to SERVO 0 connector.
 //#define Z_SERVO_ANGLES { 70, 0 } // Z Servo Deploy and Stow angles
 
+// BLtouch servo on ext-a2 and sensor on zmin:
+#if ALL(KAD_MELZI, KAD_BLTOUCH, KAD_MELZI_SERVO_A2, Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN)
+  #define SERVO0_PIN 29
+#endif
+
 /**
  * The BLTouch probe uses a Hall effect sensor and emulates a servo.
  */
@@ -1519,10 +1524,12 @@
  */
 #if ANY(KAD_SKR_ENOUGH_FLASH, KAD_SMART_FILAMENT_SENSOR, KAD_FILAMENT_SENSOR)
   #define FILAMENT_RUNOUT_SENSOR
-  #if BOTH(KAD_MELZI, KAD_BLTOUCH)
-    // By default sensor would use pin 27. But if BLtouch also enabled, connections are:
-    // BLTouch: Pin 27 and Zmin
-    // Filament sensor: EXT-A2
+  #if ENABLED(KAD_MELZI) && ANY(KAD_BLTOUCH, KAD_MELZI_FILAMENT_SENSOR_A2)
+    // By default sensor would use pin 27
+    // But if BLtouch also enabled, connections are:
+    //   BLTouch: Pin 27 and Zmin
+    //   Filament sensor: EXT-A2
+    // It is also possible to force filament sensor to use EXT-A2
     #define FIL_RUNOUT_PIN     29
   #endif
 #endif
@@ -2008,6 +2015,10 @@
 #if ENABLED(KAD_SKR_ENOUGH_FLASH)
   #define NOZZLE_PARK_FEATURE
 #endif
+// Special case for Melzi and filament sensor
+// #if ENABLED(KAD_MELZI) && ANY(KAD_SMART_FILAMENT_SENSOR, KAD_FILAMENT_SENSOR) && DISABLED(KAD_BLTOUCH)
+//   #define NOZZLE_PARK_FEATURE
+// #endif
 #if ENABLED(NOZZLE_PARK_FEATURE)
   // Specify a park position as { X, Y, Z_raise }
   #define NOZZLE_PARK_POINT { (X_MIN_POS + 10), (Y_MAX_POS - 10), 20 }

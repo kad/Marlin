@@ -2457,6 +2457,10 @@
 #if ENABLED(KAD_SKR_ENOUGH_FLASH)
   #define ADVANCED_PAUSE_FEATURE
 #endif
+// Special case for Melzi, experiment
+// #if ENABLED(KAD_MELZI) && ANY(KAD_SMART_FILAMENT_SENSOR, KAD_FILAMENT_SENSOR) && DISABLED(KAD_BLTOUCH)
+//   #define ADVANCED_PAUSE_FEATURE
+// #endif
 #if ENABLED(ADVANCED_PAUSE_FEATURE)
   #define PAUSE_PARK_RETRACT_FEEDRATE         30  // (mm/s) Initial retract feedrate.
   #define PAUSE_PARK_RETRACT_LENGTH            6  // (mm) Initial retract.

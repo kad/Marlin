@@ -16,7 +16,7 @@ if model not in ('zero', 'zero2'):
     print("Error: unsupported Mega Zero revision", file=sys.stderr)
     exit(1)
 
-if board not in ('melzi', 'btt'):
+if board not in ('melzi', 'btt', 'mks'):
     print("Error: unsupported board", file=sys.stderr)
     exit(1)
 
@@ -27,8 +27,8 @@ if board == 'btt':
     #     print("Error: dynamic build parameters expect to work only with nanolib", file=sys.stderr)
     #     exit(1)
 
-ignores = ("anycubic", "mega", "zero", "zero2", "melzi", "btt", "stdlib", "mini", "e3turbo", "dynamic")
-known = ("24v", "bl", "a2", "zmin", "bed", "e0fan", "ubl", "2e", "2to1", "2mix", "fs", "sfs")
+ignores = ("anycubic", "mega", "zero", "zero2", "melzi", "btt", "stdlib", "mini", "e3turbo", "dynamic", "mks", "nanov3")
+known = ("24v", "bl", "a2", "zmin", "bed", "e0fan", "ubl", "2e", "2to1", "2mix", "fs", "sfs", "bltouch", "pinda", "bfpt")
 
 for part in parts[4:]:
     print(part)
@@ -69,8 +69,7 @@ if "bl" in parts or "ubl" in parts:
     defines.append("-DKAD_BLTOUCH")
     if board == "melzi":
         if "a2" in parts and "zmin" in parts:
-            print("Error: only one method supported to connect BLTouch: Zmin or EXT-A2", file=sys.stderr)
-            exit(1)
+            defines.append("-DKAD_MELZI_SERVO_A2")
     elif "ubl" in parts and board == "btt" and board_variant == "e3turbo":
         defines.append("-DKAD_SKR_UBL")
     if "zmin" in parts:
@@ -82,6 +81,8 @@ if board == "melzi":
         defines.append("-DKAD_FILAMENT_SENSOR")
     elif "sfs" in parts:
         defines.append("-DKAD_SMART_FILAMENT_SENSOR")
+    if ("fs" in parts or "sfs" in parts) and "a2" in parts and "bl" not in parts:
+        defines.append("-DKAD_MELZI_FILAMENT_SENSOR_A2")
 
 # BTT SKR board specific options
 if board == "btt":
