@@ -27,14 +27,25 @@ if board == 'btt':
     #     print("Error: dynamic build parameters expect to work only with nanolib", file=sys.stderr)
     #     exit(1)
 
-ignores = ("anycubic", "mega", "zero", "zero2", "melzi", "btt", "stdlib", "mini", "e3turbo", "dynamic", "mks", "nanov3")
-known = ("24v", "bl", "a2", "zmin", "bed", "e0fan", "ubl", "2e", "2to1", "2mix", "fs", "sfs", "bltouch", "pinda", "bfpt")
+ignores = {"anycubic", "mega", "zero", "zero2", "melzi", "btt", "stdlib", "mini", "e3turbo", "mks", "nanov3", "minimal", "dynamic"}
+known_tags = {"24v", "zmin", "bed"}
+melzi_tags = {"a2", "fs", "sfs"}
+btt_tags = {"e0fan"}
+e3turbo_tags = {"ubl", "2e", "2to1", "2mix"}
+sensors = {"bl", "bltouch", "bfpt", "pinda"}
 
 for part in parts[4:]:
     print(part)
-    if part not in ignores and part not in known:
-        print("Error: unsupported feature '%s' " % part, file=sys.stderr)
-        exit(1)
+    if part in ignores or part in known_tags or part in sensors:
+        continue
+    elif board == "melzi" and part in melzi_tags:
+        continue
+    elif board == "btt" and part in btt_tags:
+        continue
+    elif board == "btt" and board_variant == "e3turbo" and part in e3turbo_tags:
+        continue
+    print("Error: unsupported feature '%s' " % part, file=sys.stderr)
+    exit(1)
 
 # PSU 12v/24v. Mega Zero 2 defaults to 24V PSU
 if '24v' in parts or model == 'zero2':
@@ -42,7 +53,7 @@ if '24v' in parts or model == 'zero2':
 
 # Heated bed support. Mega Zero 2 has heated bed by default
 if 'bed' in parts or model == 'zero2':
-    defines.append("-DKAD_MELZI_BED" if model == 'melzi' else "-DKAD_SKR_BED")
+    defines.append("-DKAD_MELZI_BED" if board == 'melzi' else "-DKAD_SKR_BED")
 
 # on BTT SKR E3 Turbo it is possible to have two extruders with different nozzle setups
 # 2E - Chimera, independant heaters/nozzles
@@ -65,15 +76,40 @@ if len(dual_extruders) > 0:
         print("Error: multiple extruders supported only on BTT SKR E3 Tubro board", file=sys.stderr)
         exit(1)
 
-if "bl" in parts or "ubl" in parts:
-    defines.append("-DKAD_BLTOUCH")
-    if board == "melzi":
-        if "a2" in parts and "zmin" in parts:
-            defines.append("-DKAD_MELZI_SERVO_A2")
-    elif "ubl" in parts and board == "btt" and board_variant == "e3turbo":
-        defines.append("-DKAD_SKR_UBL")
+sensors_check = [x for x in parts if x in sensors]
+if len(sensors_check) > 1:
+    print("Error: only one option for sensor type can be enabled.", file=sys.stderr)
+    exit(1)
+
+if sensors.intersection(parts) or "ubl" in parts:
+    defines.append("-DKAD_ABL")
+    if "ubl" in parts and board == "btt" and board_variant == "e3turbo":
+        defines.append("-DKAD_UBL")
     if "zmin" in parts:
         defines.append("-DZ_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN")
+    # For now, UBL assumes BLTouch
+    if {"bl", "ubl", "bfpt"}.intersection(parts):
+        if "bfpt" in parts:
+            defines.append("-DKAD_BFPTOUCH")
+        else:
+            defines.append("-DKAD_BLTOUCH")
+        if board == "melzi":
+            if "a2" in parts and "zmin" in parts:
+                defines.append("-DKAD_MELZI_SERVO_A2")
+    elif "pinda" in parts:
+        defines.append("-DKAD_PINDA")
+        if board == "melzi":
+            # Default to PIN27, but potentially can be on EXT-A2
+            if "zmin" in parts:
+                print("Error: only PIN27 or EXT-A2 can be used for PINDA sensor on Melzi board", file=sys.stderr)
+                exit(1)
+            elif "a2" in parts:
+                defines.append("-DKAD_MELZI_PINDA_A2")
+        elif board == "btt":
+            if "zmin" in parts:
+                print("Error: for PINDA sensor use dedicated sensor port", file=sys.stderr)
+                exit(1)
+
 
 # Stock board specific options
 if board == "melzi":
@@ -81,7 +117,7 @@ if board == "melzi":
         defines.append("-DKAD_FILAMENT_SENSOR")
     elif "sfs" in parts:
         defines.append("-DKAD_SMART_FILAMENT_SENSOR")
-    if ("fs" in parts or "sfs" in parts) and "a2" in parts and "bl" not in parts:
+    if ("fs" in parts or "sfs" in parts) and "a2" in parts and not sensors.intersection(parts):
         defines.append("-DKAD_MELZI_FILAMENT_SENSOR_A2")
 
 # BTT SKR board specific options
