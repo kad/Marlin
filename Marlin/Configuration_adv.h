@@ -944,7 +944,7 @@
 //
 // Add the G35 command to read bed corners to help adjust screws. Requires a bed probe.
 //
-#if BOTH(KAD_SKR_ENOUGH_FLASH, KAD_BLTOUCH)
+#if BOTH(KAD_SKR_ENOUGH_FLASH, KAD_ABL)
   #define ASSISTED_TRAMMING
 #endif
 #if ENABLED(ASSISTED_TRAMMING)
@@ -1241,7 +1241,7 @@
 
   // Add Probe Z Offset calibration to the Z Probe Offsets menu
   #if HAS_BED_PROBE
-    #if BOTH(KAD_BLTOUCH, KAD_SKR_ENOUGH_FLASH)
+    #if BOTH(KAD_ABL, KAD_SKR_ENOUGH_FLASH)
       #define PROBE_OFFSET_WIZARD
     #endif
     #if ENABLED(PROBE_OFFSET_WIZARD)
@@ -1258,7 +1258,7 @@
   #endif
 
   // Include a page of printer information in the LCD Main Menu
-  #if DISABLED(KAD_BLTOUCH) || ENABLED(KAD_SKR_ENOUGH_FLASH)
+  #if DISABLED(KAD_ABL) || ENABLED(KAD_SKR_ENOUGH_FLASH)
     #define LCD_INFO_MENU
   #endif
   #if ENABLED(LCD_INFO_MENU)
@@ -1266,7 +1266,7 @@
   #endif
 
   // BACK menu items keep the highlight at the top
-  #if DISABLED(KAD_BLTOUCH) || ENABLED(KAD_SKR_ENOUGH_FLASH)
+  #if DISABLED(KAD_ABL) || ENABLED(KAD_SKR_ENOUGH_FLASH)
     #define TURBO_BACK_MENU_ITEM
   #endif
 
@@ -1326,7 +1326,7 @@
   //#define LCD_DECIMAL_SMALL_XY
 
   // Add an 'M73' G-code to set the current percentage
-  #if DISABLED(KAD_BLTOUCH) || ENABLED(KAD_SKR_ENOUGH_FLASH)
+  #if DISABLED(KAD_ABL) || ENABLED(KAD_SKR_ENOUGH_FLASH)
     #define LCD_SET_PROGRESS_MANUALLY
   #endif
 
@@ -1397,7 +1397,7 @@
 
   #define SD_MENU_CONFIRM_START             // Confirm the selected SD file before printing
 
-  #if ENABLED(KAD_MELZI) && ANY(KAD_SMART_FILAMENT_SENSOR, KAD_FILAMENT_SENSOR, KAD_MELZI_BED, KAD_BLTOUCH)
+  #if ENABLED(KAD_MELZI) && ANY(KAD_SMART_FILAMENT_SENSOR, KAD_FILAMENT_SENSOR, KAD_MELZI_BED, KAD_ABL)
     #define NO_SD_AUTOSTART                 // Remove auto#.g file support completely to save some Flash, SRAM
   #endif
   //#define MENU_ADDAUTOSTART               // Add a menu option to run auto#.g files
@@ -1501,7 +1501,7 @@
 
   // Enable this option to scroll long filenames in the SD card menu
   // KAD: 200 bytes
-  #if DISABLED(KAD_BLTOUCH) || ENABLED(KAD_SKR_ENOUGH_FLASH)
+  #if DISABLED(KAD_ABL) || ENABLED(KAD_SKR_ENOUGH_FLASH)
     #define SCROLL_LONG_FILENAMES
   #endif
 
@@ -1702,7 +1702,7 @@
     #define STATUS_HEAT_PERCENT       // Show heating in a progress bar
     #define BOOT_MARLIN_LOGO_ANIMATED // Animated Marlin logo. Costs ~‭3260 (or ~940) bytes of PROGMEM.
   #endif
-  #if BOTH(KAD_BLTOUCH, KAD_MELZI_BED)
+  #if BOTH(KAD_ABL, KAD_MELZI_BED)
     #define BOOT_MARLIN_LOGO_SMALL    // Show a smaller Marlin logo on the Boot Screen (saving 399 bytes of flash)
   #endif
 
@@ -1944,7 +1944,7 @@
 
   //#define BABYSTEP_DISPLAY_TOTAL          // Display total babysteps since last G28
 
-  #if ENABLED(KAD_BLTOUCH)
+  #if ENABLED(KAD_ABL)
     #define BABYSTEP_ZPROBE_OFFSET          // Combine M851 Z and Babystepping
   #endif
   #if ENABLED(BABYSTEP_ZPROBE_OFFSET)

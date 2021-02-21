@@ -76,7 +76,7 @@
   #define KAD_MZ_VERSION ""
   #define KAD_STR_PSU "12V"
 #endif
-#if ENABLED(KAD_BLTOUCH)
+#if ENABLED(KAD_ABL)
   #define KAD_STR_VARIANT " ABL"
 #elif ANY(MESH_BED_LEVELING, KAD_SKR_MINI, KAD_SKR_E3_TURBO)
   #define KAD_STR_VARIANT " MBL"
@@ -103,7 +103,7 @@
 #define SHOW_BOOTSCREEN
 
 // KAD: 500 bytes
-#if DISABLED(KAD_BLTOUCH) || ENABLED(KAD_SKR_ENOUGH_FLASH)
+#if DISABLED(KAD_ABL) || ENABLED(KAD_SKR_ENOUGH_FLASH)
 // Show the bitmap in Marlin/_Bootscreen.h on startup.
   #define SHOW_CUSTOM_BOOTSCREEN
 #endif
@@ -644,7 +644,7 @@
 
 #if ENABLED(PIDTEMP)
   // KAD: 1100 bytes
-  #if DISABLED(KAD_BLTOUCH) || ENABLED(KAD_SKR_ENOUGH_FLASH)
+  #if DISABLED(KAD_ABL) || ENABLED(KAD_SKR_ENOUGH_FLASH)
     #define PID_EDIT_MENU         // Add PID editing to the "Advanced Settings" menu. (~700 bytes of PROGMEM)
     #define PID_AUTOTUNE_MENU     // Add PID auto-tuning to the "Advanced Settings" menu. (~250 bytes of PROGMEM)
   #endif
@@ -847,7 +847,10 @@
 //#define USE_KMAX_PLUG
 
 // Enable pullup for all endstops to prevent a floating state
-#define ENDSTOPPULLUPS
+// KAD: specifal handling for BFPTouch - optical endstop on probe doesn't need pullup.
+#if DISABLED(KAD_BFPTOUCH)
+  #define ENDSTOPPULLUPS
+#endif
 #if DISABLED(ENDSTOPPULLUPS)
   // Disable ENDSTOPPULLUPS to set pullups individually
   //#define ENDSTOPPULLUP_XMAX
@@ -863,6 +866,13 @@
   //#define ENDSTOPPULLUP_JMIN
   //#define ENDSTOPPULLUP_KMIN
   //#define ENDSTOPPULLUP_ZMIN_PROBE
+  #if ENABLED(KAD_BFPTOUCH)
+    #define ENDSTOPPULLUP_XMIN
+    #define ENDSTOPPULLUP_YMIN
+    #if DISABLED(Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN)
+      #define ENDSTOPPULLUP_ZMIN
+    #endif
+  #endif
 #endif
 
 // Enable pulldown for all endstops to prevent a floating state
@@ -953,7 +963,7 @@
 
 // Enable this feature if all enabled endstop pins are interrupt-capable.
 // This will remove the need to poll the interrupt pins, saving many CPU cycles.
-#if ENABLED(KAD_BLTOUCH) && DISABLED(KAD_SKR_E3_TURBO)
+#if ENABLED(KAD_ABL) && DISABLED(KAD_SKR_E3_TURBO)
   #define ENDSTOP_INTERRUPTS_FEATURE
 #endif
 
@@ -1108,7 +1118,7 @@
 //#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN
 
 // Force the use of the probe for Z-axis homing
-#if ENABLED(KAD_BLTOUCH)
+#if ENABLED(KAD_ABL)
   #define USE_PROBE_FOR_Z_HOMING
 #endif
 
@@ -1127,7 +1137,7 @@
  *      - normally-closed switches to GND and D32.
  *      - normally-open switches to 5V and D32.
  */
-#if BOTH(KAD_MELZI, KAD_BLTOUCH) && DISABLED(Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN)
+#if ENABLED(KAD_MELZI) && DISABLED(Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN) && ANY(KAD_BLTOUCH, KAD_BFPTOUCH, KAD_PINDA)
   #define Z_MIN_PROBE_PIN 29 // Pin 29 is the A2 on Melzi board. Usually unused.
 #endif
 
@@ -1149,7 +1159,9 @@
  * A Fix-Mounted Probe either doesn't deploy or needs manual deployment.
  *   (e.g., an inductive probe or a nozzle-based probe-switch.)
  */
-//#define FIX_MOUNTED_PROBE
+#if ENABLED(KAD_PINDA)
+  #define FIX_MOUNTED_PROBE
+#endif
 
 /**
  * Use the nozzle as the probe, as with a conductive
@@ -1160,12 +1172,20 @@
 /**
  * Z Servo Probe, such as an endstop switch on a rotating arm.
  */
-//#define Z_PROBE_SERVO_NR 0       // Defaults to SERVO 0 connector.
-//#define Z_SERVO_ANGLES { 70, 0 } // Z Servo Deploy and Stow angles
+#if ENABLED(KAD_BFPTOUCH)
+  #define Z_PROBE_SERVO_NR 0       // Defaults to SERVO 0 connector.
+  #define Z_SERVO_ANGLES { 70, 0 } // Z Servo Deploy and Stow angles
+#endif
 
-// BLtouch servo on ext-a2 and sensor on zmin:
-#if ALL(KAD_MELZI, KAD_BLTOUCH, KAD_MELZI_SERVO_A2, Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN)
-  #define SERVO0_PIN 29
+// Define servo pin on Melzi, BLtouch servo on ext-a2 and sensor on zmin:
+#if ENABLED(KAD_MELZI)
+  #if BOTH(KAD_MELZI_SERVO_A2, Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN) && ANY(KAD_BLTOUCH, KAD_BFPTOUCH)
+    #define SERVO0_PIN 29
+  #elif BOTH(KAD_BFPTOUCH, KAD_MELZI_SERVO_A2)
+    #define SERVO0_PIN 29
+  #elif ENABLED(KAD_BFPTOUCH)
+    #define SERVO0_PIN 27
+  #endif
 #endif
 
 /**
@@ -1345,7 +1365,7 @@
 #define Z_PROBE_OFFSET_RANGE_MAX 20
 
 // Enable the M48 repeatability test to test probe accuracy
-#if ENABLED(KAD_BLTOUCH) && DISABLED(KAD_MELZI_BED)
+#if ANY(KAD_BLTOUCH, KAD_BFPTOUCH) && DISABLED(KAD_MELZI_BED)
   #define Z_MIN_PROBE_REPEATABILITY_TEST
 #endif
 
@@ -1440,8 +1460,10 @@
  */
 //#define Z_IDLE_HEIGHT Z_HOME_POS
 
-//#define Z_HOMING_HEIGHT  4      // (mm) Minimal Z height before homing (G28) for Z clearance above the bed, clamps, ...
+#if ENABLED(KAD_BFPTOUCH)
+  #define Z_HOMING_HEIGHT  5      // (mm) Minimal Z height before homing (G28) for Z clearance above the bed, clamps, ...
                                   // Be sure to have this much clearance over your Z_MAX_POS to prevent grinding.
+#endif
 
 //#define Z_AFTER_HOMING  10      // (mm) Height to move to after homing Z
 
@@ -1524,7 +1546,7 @@
  */
 #if ANY(KAD_SKR_ENOUGH_FLASH, KAD_SMART_FILAMENT_SENSOR, KAD_FILAMENT_SENSOR)
   #define FILAMENT_RUNOUT_SENSOR
-  #if ENABLED(KAD_MELZI) && ANY(KAD_BLTOUCH, KAD_MELZI_FILAMENT_SENSOR_A2)
+  #if ENABLED(KAD_MELZI) && ANY(KAD_BLTOUCH, KAD_BFPTOUCH, KAD_MELZI_FILAMENT_SENSOR_A2)
     // By default sensor would use pin 27
     // But if BLtouch also enabled, connections are:
     //   BLTouch: Pin 27 and Zmin
@@ -1649,8 +1671,8 @@
 //#define MESH_BED_LEVELING
 
 // KAD: Manual Mesh Bed Leveling is enabled via platformio build flag define
-#if ENABLED(KAD_BLTOUCH)
-  #if BOTH(KAD_SKR_E3_TURBO, KAD_SKR_UBL)
+#if ENABLED(KAD_ABL)
+  #if BOTH(KAD_SKR_E3_TURBO, KAD_UBL)
     #define AUTO_BED_LEVELING_UBL
   #else
     #define AUTO_BED_LEVELING_BILINEAR
@@ -1801,7 +1823,7 @@
   #define MESH_EDIT_Z_STEP  0.025 // (mm) Step size while manually probing Z axis.
   #define LCD_PROBE_Z_RANGE 4     // (mm) Z Range centered on Z_MIN_POS for LCD Z adjustment
   // KAD: 1100 bytes
-  #if DISABLED(KAD_BLTOUCH) || ENABLED(KAD_SKR_ENOUGH_FLASH)
+  #if DISABLED(KAD_ABL) || ENABLED(KAD_SKR_ENOUGH_FLASH)
     #define MESH_EDIT_MENU        // Add a menu to edit mesh points
   #endif
 #endif
@@ -1868,7 +1890,7 @@
  * - Allows Z homing only when XY positions are known and trusted.
  * - If stepper drivers sleep, XY homing may be required again before Z homing.
  */
-#if ENABLED(KAD_BLTOUCH)
+#if ENABLED(KAD_ABL)
   #define Z_SAFE_HOMING
 #endif
 #if ENABLED(Z_SAFE_HOMING)
@@ -2307,7 +2329,7 @@
 // Add individual axis homing items (Home X, Home Y, and Home Z) to the LCD menu.
 //
 // KAD: 300 bytes
-#if DISABLED(KAD_BLTOUCH) || ENABLED(KAD_SKR_ENOUGH_FLASH)
+#if DISABLED(KAD_ABL) || ENABLED(KAD_SKR_ENOUGH_FLASH)
   #define INDIVIDUAL_AXIS_HOMING_MENU
 #endif
 
@@ -3058,10 +3080,14 @@
 // (ms) Delay  before the next move will start, to give the servo time to reach its target angle.
 // 300ms is a good value but you can try less delay.
 // If the servo can't reach the requested position, increase it.
-#define SERVO_DELAY { 300 }
+#if ENABLED(KAD_BFPTOUCH)
+  #define SERVO_DELAY { 350 }
 
-// Only power servos during movement, otherwise leave off to prevent jitter
-//#define DEACTIVATE_SERVOS_AFTER_MOVE
+  // Only power servos during movement, otherwise leave off to prevent jitter
+  #define DEACTIVATE_SERVOS_AFTER_MOVE
 
-// Edit servo angles with M281 and save to EEPROM with M500
-//#define EDITABLE_SERVO_ANGLES
+  // Edit servo angles with M281 and save to EEPROM with M500
+  #define EDITABLE_SERVO_ANGLES
+#else
+  #define SERVO_DELAY { 300 }
+#endif
