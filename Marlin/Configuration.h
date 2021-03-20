@@ -2513,11 +2513,13 @@
 //=========================      (Graphical LCDs)      ========================
 //=============================================================================
 
-#if ANY(KAD_SKR_MINI, KAD_SKR_E3_TURBO)
-  #define CR10_STOCKDISPLAY
-#else
-  #define REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER
-#endif
+// #if ANY(KAD_SKR_MINI, KAD_SKR_E3_TURBO)
+//   #define CR10_STOCKDISPLAY
+// #else
+//   #define REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER
+// #endif
+// KAD: use CR10_STOCKDISPLAY for all supported boards
+#define CR10_STOCKDISPLAY
 
 //
 // CONTROLLER TYPE: Graphical 128x64 (DOGM)
