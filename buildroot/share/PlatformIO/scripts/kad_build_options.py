@@ -32,7 +32,7 @@ known_tags = {"24v", "zmin", "bed"}
 melzi_tags = {"a2", "fs", "sfs"}
 btt_tags = {"e0fan"}
 e3turbo_tags = {"ubl", "2e", "2to1", "2mix"}
-sensors = {"bl", "bltouch", "bfpt", "pinda"}
+sensors = {"bl", "bltouch", "bfpt", "pinda", "akp"}
 
 for part in parts[4:]:
     print(part)
@@ -108,6 +108,16 @@ if sensors.intersection(parts) or "ubl" in parts:
         elif board == "btt":
             if "zmin" in parts:
                 print("Error: for PINDA sensor use dedicated sensor port", file=sys.stderr)
+                exit(1)
+    elif "akp" in parts:
+        defines.append("-DKAD_ALLEN_KEY_PROBE")
+        if board == "melzi":
+            # Default to EXT-A2, but can be used on zmin
+            if "zmin" not in parts:
+                defines.append("-DKAD_MELZI_AKP_A2")
+        elif board == "btt":
+            if "zmin" in parts:
+                print("Error: for Allen Key Probe use dedicated sensor port", file=sys.stderr)
                 exit(1)
 
 

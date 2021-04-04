@@ -1137,7 +1137,7 @@
  *      - normally-closed switches to GND and D32.
  *      - normally-open switches to 5V and D32.
  */
-#if ENABLED(KAD_MELZI) && DISABLED(Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN) && ANY(KAD_BLTOUCH, KAD_BFPTOUCH, KAD_PINDA)
+#if ENABLED(KAD_MELZI) && DISABLED(Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN) && ANY(KAD_BLTOUCH, KAD_BFPTOUCH, KAD_PINDA, KAD_ALLEN_KEY_PROBE)
   #define Z_MIN_PROBE_PIN 29 // Pin 29 is the A2 on Melzi board. Usually unused.
 #endif
 
@@ -1159,7 +1159,7 @@
  * A Fix-Mounted Probe either doesn't deploy or needs manual deployment.
  *   (e.g., an inductive probe or a nozzle-based probe-switch.)
  */
-#if ENABLED(KAD_PINDA)
+#if ANY(KAD_PINDA, KAD_ALLEN_KEY_PROBE)
   #define FIX_MOUNTED_PROBE
 #endif
 
@@ -1285,7 +1285,11 @@
  *     |    [-]    |
  *     O-- FRONT --+
  */
-#define NOZZLE_TO_PROBE_OFFSET { -40, -12, 0 }
+#if ENABLED(DKAD_ALLEN_KEY_PROBE)
+  #define NOZZLE_TO_PROBE_OFFSET { -38, 0.5, 0 }
+#else
+  #define NOZZLE_TO_PROBE_OFFSET { -40, -12, 0 }
+#endif
 
 // Most probes should stay away from the edges of the bed, but
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
@@ -1370,7 +1374,9 @@
 #endif
 
 // Before deploy/stow pause for user confirmation
-//#define PAUSE_BEFORE_DEPLOY_STOW
+#if ENABLED(KAD_ALLEN_KEY_PROBE)
+  #define PAUSE_BEFORE_DEPLOY_STOW
+#endif
 #if ENABLED(PAUSE_BEFORE_DEPLOY_STOW)
   //#define PAUSE_PROBE_DEPLOY_WHEN_TRIGGERED // For Manual Deploy Allenkey Probe
 #endif
