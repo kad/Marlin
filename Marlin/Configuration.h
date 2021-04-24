@@ -1002,7 +1002,7 @@
  * following movement settings. If fewer factors are given than the
  * total number of extruders, the last value applies to the rest.
  */
-#if ENABLED(KAD_SKR_E3_TURBO) && ANY(KAD_SKR_E3_TURBO_2TO1, KAD_SKR_E3_TURBO_2E, KAD_SKR_E3_TURBO_2MIX)
+#if ENABLED(KAD_SKR_E3_TURBO) && ANY(KAD_SKR_E3_TURBO_2TO1, KAD_SKR_E3_TURBO_2E)
   #define DISTINCT_E_FACTORS
 #endif
 
