@@ -30,7 +30,7 @@ if board == 'btt':
 ignores = {"anycubic", "mega", "zero", "zero2", "melzi", "btt", "stdlib", "mini", "e3turbo", "mks", "nanov3", "minimal", "dynamic"}
 known_tags = {"24v", "zmin", "bed"}
 melzi_tags = {"a2", "fs", "sfs"}
-btt_tags = {"e0fan"}
+btt_tags = {"e0fan", "fs"}
 e3turbo_tags = {"ubl", "2e", "2to1", "2mix"}
 sensors = {"bl", "bltouch", "bfpt", "pinda", "akp"}
 
@@ -134,6 +134,10 @@ if board == "melzi":
 if board == "btt":
     if "e0fan" in parts:
         defines.append("-DKAD_SKR_E0_FAN")
+    if "fs" in parts:
+        defines.append("-DKAD_FILAMENT_SENSOR")
+    else:
+        defines.append("-DKAD_SMART_FILAMENT_SENSOR")
 
 if defines:
     env.Append(BUILD_FLAGS=defines)

@@ -1550,7 +1550,7 @@
  * RAMPS-based boards use SERVO3_PIN for the first runout sensor.
  * For other boards you may need to define FIL_RUNOUT_PIN, FIL_RUNOUT2_PIN, etc.
  */
-#if ANY(KAD_SKR_ENOUGH_FLASH, KAD_SMART_FILAMENT_SENSOR, KAD_FILAMENT_SENSOR)
+#if ANY(KAD_SMART_FILAMENT_SENSOR, KAD_FILAMENT_SENSOR)
   #define FILAMENT_RUNOUT_SENSOR
   #if ENABLED(KAD_MELZI) && ANY(KAD_BLTOUCH, KAD_BFPTOUCH, KAD_MELZI_FILAMENT_SENSOR_A2)
     // By default sensor would use pin 27
@@ -1630,7 +1630,7 @@
     // Enable this option to use an encoder disc that toggles the runout pin
     // as the filament moves. (Be sure to set FILAMENT_RUNOUT_DISTANCE_MM
     // large enough to avoid false positives.)
-    #if ANY(KAD_SKR_ENOUGH_FLASH, KAD_SMART_FILAMENT_SENSOR)
+    #if ENABLED(KAD_SMART_FILAMENT_SENSOR)
       #define FILAMENT_MOTION_SENSOR
     #endif
   #endif
