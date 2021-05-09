@@ -136,7 +136,8 @@ if board == "btt":
         defines.append("-DKAD_SKR_E0_FAN")
     if "fs" in parts:
         defines.append("-DKAD_FILAMENT_SENSOR")
-    else:
+    elif "stdlib" not in parts:
+        # Enable Smart Filament Sensor by default, unless there is shortage of flash.
         defines.append("-DKAD_SMART_FILAMENT_SENSOR")
 
 if defines:
