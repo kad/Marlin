@@ -3674,7 +3674,9 @@
 /**
  * Auto-report position with M154 S<seconds>
  */
-//#define AUTO_REPORT_POSITION
+//#if ENABLED(KAD_SKR_ENOUGH_FLASH)
+#define AUTO_REPORT_POSITION
+//#endif
 
 /**
  * Include capabilities in M115 output
