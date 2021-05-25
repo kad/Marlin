@@ -87,6 +87,7 @@
 #define STRING_CONFIG_H_AUTHOR "(kad, Anycubic Mega Zero" KAD_MZ_VERSION KAD_STR_VARIANT " " KAD_STR_PSU ")" // Who made the changes.
 
 //#define CUSTOM_VERSION_FILE Version.h // Path from the root directory (no quotes)
+#define CUSTOM_VERSION_FILE Version_kad.h
 
 /**
  * *** VENDORS PLEASE READ ***
@@ -1300,7 +1301,7 @@
 
 // Most probes should stay away from the edges of the bed, but
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
-#define PROBING_MARGIN 5
+#define PROBING_MARGIN 10
 
 // X and Y axis travel speed (mm/min) between probes
 #define XY_PROBE_FEEDRATE (133*60)
@@ -1491,13 +1492,26 @@
 
 // @section machine
 
+#if ANY(KAD_SKR_BED, KAD_MELZI_BED) && DISABLED(KAD_PSU_24V)
+    // KAD: Assuming 220x220 heated bed mod on MZ1
+    #define X_BED_SIZE 220
+    #define Y_BED_SIZE 220
+    #define X_MIN_POS -12
+    #define Y_MIN_POS -7
+#else
+    #define X_BED_SIZE 225
+    #define Y_BED_SIZE 225
+    #define X_MIN_POS -7
+    #define Y_MIN_POS -2
+#endif
+
 // The size of the printable area
-#define X_BED_SIZE 225
-#define Y_BED_SIZE 225
+//#define X_BED_SIZE 225
+//#define Y_BED_SIZE 225
 
 // Travel limits (mm) after homing, corresponding to endstop positions.
-#define X_MIN_POS -7
-#define Y_MIN_POS -2
+//#define X_MIN_POS -7
+//#define Y_MIN_POS -2
 #define Z_MIN_POS 0
 #define X_MAX_POS X_BED_SIZE
 #define Y_MAX_POS Y_BED_SIZE

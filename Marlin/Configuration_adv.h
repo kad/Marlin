@@ -1527,7 +1527,9 @@
   /**
    * Auto-report SdCard status with M27 S<seconds>
    */
-  //#define AUTO_REPORT_SD_STATUS
+  #if ENABLED(KAD_SKR_ENOUGH_FLASH)
+    #define AUTO_REPORT_SD_STATUS
+  #endif
 
   /**
    * Support for USB thumb drives using an Arduino USB Host Shield or
