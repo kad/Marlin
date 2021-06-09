@@ -875,9 +875,7 @@
   //#define BLTOUCH_HS_MODE
 
   // Safety: Enable voltage mode settings in the LCD menu.
-  // #if BOTH(KAD_BLTOUCH, KAD_SKR_MINI_NANOLIB)
-  //   #define BLTOUCH_LCD_VOLTAGE_MENU
-  // #endif
+  //#define BLTOUCH_LCD_VOLTAGE_MENU
 
 #endif // BLTOUCH
 
