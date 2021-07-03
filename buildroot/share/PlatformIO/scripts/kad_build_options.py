@@ -27,7 +27,7 @@ if board == 'btt':
     #     print("Error: dynamic build parameters expect to work only with nanolib", file=sys.stderr)
     #     exit(1)
 
-ignores = {"anycubic", "mega", "zero", "zero2", "melzi", "btt", "stdlib", "mini", "e3turbo", "mks", "nanov3", "minimal", "dynamic", "stm32"}
+ignores = {"anycubic", "mega", "zero", "zero2", "melzi", "btt", "stdlib", "mini", "e3turbo", "mks", "nanov3", "minimal", "dynamic", "stm32", "maple"}
 known_tags = {"24v", "zmin", "bed"}
 melzi_tags = {"a2", "fs", "sfs"}
 btt_tags = {"e0fan", "fs"}
